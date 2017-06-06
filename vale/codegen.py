@@ -894,9 +894,15 @@ class ValeCodegen(Codegen):
 
     @property
     def name(self):
+        """Returns the name of the current kernel."""
         return self._name
 
     def doprint(self, language):
+        """Generate the current kernel in the given language.
+
+        language: str
+            target language. Possible values {"LUA", "F95"}
+        """
         args        = self.args
         local_vars  = self.local_vars
         return_vars = []
