@@ -97,6 +97,62 @@ _______
    :private-members:
    :special-members:
 
+Pullback
+________
+
+.. autoclass:: Pullback 
+   :members:
+   :private-members:
+   :special-members:
+
+Geometry
+________
+
+.. autoclass:: Geometry 
+   :members:
+   :private-members:
+   :special-members:
+
+TestFunction
+____________
+
+.. autoclass:: TestFunction 
+   :members:
+   :private-members:
+   :special-members:
+
+TrialFunction
+_____________
+
+.. autoclass:: TrialFunction 
+   :members:
+   :private-members:
+   :special-members:
+
+Field
+_____
+
+.. autoclass:: Field 
+   :members:
+   :private-members:
+   :special-members:
+
+Formulation
+___________
+
+.. autoclass:: Formulation 
+   :members:
+   :private-members:
+   :special-members:
+
+ValeCodegen
+___________
+
+.. autoclass:: ValeCodegen 
+   :members:
+   :private-members:
+   :special-members:
+
 
 Backend
 ^^^^^^^

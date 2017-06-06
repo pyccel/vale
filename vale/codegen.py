@@ -67,7 +67,22 @@ class Codegen(object):
 
 
 class Pullback(Codegen):
+    """Allows to compute test and trial functions on the physical domain using the appropriate mapping.
+    """
     def __init__(self, dim, n_deriv, trial=False):
+        """
+        Constructor for the Pullback class.
+
+        dim: int
+            dimension of the physical domain.
+
+        n_deriv: int
+            number of derivatives. Both trial and test functions are handled
+            using the same n_deriv, even if the AST may give 2 different values.
+
+        trial: bool
+            if True, then the same rules will apply to trial functions.
+        """
         # ...
         n1 = Symbol('n1', integer=True)
         n2 = Symbol('n2', integer=True)
@@ -301,7 +316,15 @@ class Pullback(Codegen):
 
 
 class Geometry(Codegen):
+    """Allows to compute data related to the geometry.
+    """
     def __init__(self, dim):
+        """Constructor for the Geometry rule.
+
+        dim: int
+            dimension of the physical domain.
+
+        """
         # ...
         n1 = Symbol('n1', integer=True)
         n2 = Symbol('n2', integer=True)
@@ -363,7 +386,18 @@ class Geometry(Codegen):
 
 
 class TestFunction(Codegen):
+    """Assigns test functions from corresponding arrays.
+    """
     def __init__(self, dim, n_deriv):
+        """Constructor for the current rule.
+
+        dim: int
+            dimension of the physical domain.
+
+        n_deriv: int
+            number of derivatives.
+
+        """
         # ...
         n1 = Symbol('n1', integer=True)
         n2 = Symbol('n2', integer=True)
@@ -458,7 +492,18 @@ class TestFunction(Codegen):
 
 
 class TrialFunction(Codegen):
+    """Assigns trial functions from corresponding arrays.
+    """
     def __init__(self, dim, n_deriv):
+        """Constructor for the current rule.
+
+        dim: int
+            dimension of the physical domain.
+
+        n_deriv: int
+            number of derivatives.
+
+        """
         # ...
         n1 = Symbol('n1', integer=True)
         n2 = Symbol('n2', integer=True)
@@ -553,7 +598,24 @@ class TrialFunction(Codegen):
 
 
 class Field(Codegen):
+    """Allows to handle fields as additional inputs to Finite Elements kernels.
+    """
     def __init__(self, dim, n_deriv, fields, **settings):
+        """Constructor for the field rule.
+
+        dim: int
+            dimension of the physical domain.
+
+        n_deriv: int
+            number of derivatives.
+
+        fields: list
+            list of field names as given from the parser.
+
+        n_deriv_fields: int
+            number of derivatives applied to the field.
+
+        """
         # ...
         n1 = Symbol('n1', integer=True)
         n2 = Symbol('n2', integer=True)
@@ -624,7 +686,14 @@ class Field(Codegen):
 
 
 class Formulation(Codegen):
+    """An abstract rule for Bilinear and Linear Forms.
+    """
     def __init__(self, expr):
+        """Constructor of a Bilinear/Linear form rule from a sympy expression.
+
+        expr: sympy.Expression
+            a symbolic expression describing the bilinear/linear form.
+        """
         contribution = Symbol("contribution")
         wvol = Symbol("wvol")
 
@@ -639,9 +708,26 @@ class ValeCodegen(Codegen):
     """Code generation for the Vale Grammar"""
     def __init__(self, expr, dim=None, name=None, trial=False, ast=None):
         """
+        Generates the kernel associated to a linear/bilinear form.
+
         expr: sympy.expression or LinearForm or BilinearForm
             if expr is a LinearForm or BilinearForm, then either dim or ast must
-            be provided.
+            be provided, in addition to trial if expr describes the expression
+            of a bilinear form.
+
+        dim: int
+            dimension of the physical domain.
+
+        name: str
+            name to give for the kernel function/subroutine
+
+        trial: bool
+            if True and expr is a sympy expression then, it will define a
+            bilinear form.
+
+        ast: list
+            the AST as given by the parser.
+
         """
         from vale.syntax import LinearForm, BilinearForm
 
