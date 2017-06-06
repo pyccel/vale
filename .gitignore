@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+*build*
+*egg*
+*dist*
+
+vale/tests/.clapp
