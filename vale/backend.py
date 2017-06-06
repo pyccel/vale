@@ -2,10 +2,9 @@
 
 import os
 from vale.codegen import ValeCodegen
-from vale.parser  import ValeParser
-from vale.parser  import ast_to_dict
+from vale.parser  import (ValeParser, ast_to_dict)
 from vale.syntax  import (LinearForm, BilinearForm, \
-                                    Domain, Space, Field, Function, Real)
+                          Domain, Space, Field, Function, Real)
 
 
 __all__ = ["construct_model"]
@@ -329,6 +328,21 @@ class ClappAST(object):
 
 # user friendly backend
 def construct_model(ast_or_filename, backend="clapp", **settings):
+    """Generates a Model for a given backend and a programming Language.
+
+    A backend describes a library. For the moment, only clapp is used as
+    backend, but we can easily add fenics for example.
+
+    ast_or_filename: list or str
+        either a filename that contains Vale instructions or an AST.
+
+    backend: str
+        Target library to deal with and assemble our weak formulations.
+
+    directory: str
+        working directory to save temporary files. When using Clapp as a
+        backend, a directory .clapp will be created in the working directory.
+    """
     if not isinstance(ast_or_filename, (list, str)):
         raise ValueError("Either ast or filename must be provided.")
 

@@ -123,7 +123,18 @@ class Parser(object):
 # User friendly parser
 
 class ValeParser(Parser):
-    def __init__(self, filename=None):
+    """A Class for Vale parser.
+
+    This is an extension of the Parser class. Additional treatment is done for
+    Linear and Bilinear Forms to define their dependencies: user_fields,
+    user_functions and user_constants.
+
+    """
+    def __init__(self, **kwargs):
+        """Vale parser constructor.
+
+        It takes the same arguments as the Parser class.
+        """
         classes = [Vale, \
                    Expression, Term, Operand, \
                    FactorSigned, FactorUnary, FactorBinary, \
@@ -131,13 +142,21 @@ class ValeParser(Parser):
                    Domain, Space, Field, Function, Real \
                    ]
 
-        if filename is None:
+        try:
+            filename = kwargs["filename"]
+        except:
             filename = "grammar.tx"
 
         super(ValeParser, self).__init__(filename = filename, \
                                          classes=classes)
 
     def parse_from_file(self, filename):
+        """Parse a set of instructions with respect to the grammar and returns
+        the AST.
+
+        filename: str
+            a file containing the instructions to parse.
+        """
         ast = super(ValeParser, self).parse_from_file(filename)
 
         # ... annotating the AST

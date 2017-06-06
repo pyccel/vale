@@ -8,8 +8,8 @@ Documentation
 Parser
 ^^^^^^
 
-.. automodule:: symcc.dsl.vale.parser
-.. currentmodule:: symcc.dsl.vale.parser
+.. automodule:: vale.parser
+.. currentmodule:: vale.parser
 
 Parser
 ______
@@ -31,8 +31,8 @@ __________
 Syntax
 ^^^^^^
 
-.. automodule:: symcc.dsl.vale.syntax
-.. currentmodule:: symcc.dsl.vale.syntax
+.. automodule:: vale.syntax
+.. currentmodule:: vale.syntax
 
 Vale
 ____
@@ -86,8 +86,8 @@ ____________
 Codegen
 ^^^^^^^
 
-.. automodule:: symcc.dsl.vale.codegen
-.. currentmodule:: symcc.dsl.vale.codegen
+.. automodule:: vale.codegen
+.. currentmodule:: vale.codegen
 
 Codegen
 _______
@@ -98,11 +98,40 @@ _______
    :special-members:
 
 
+Backend
+^^^^^^^
+
+.. automodule:: vale.backend
+.. currentmodule:: vale.backend
+
+ClappFormulation
+________________
+
+.. autoclass:: ClappFormulation
+   :members:
+   :private-members:
+   :special-members:
+
+ClappAST
+________
+
+.. autoclass:: ClappAST
+   :members:
+   :private-members:
+   :special-members:
+
+
+construct_model
+_______________
+
+.. autofunction:: construct_model 
+
+
 Utilities
 ^^^^^^^^^
 
-.. automodule:: symcc.dsl.vale.utilities
-.. currentmodule:: symcc.dsl.vale.utilities
+.. automodule:: vale.utilities
+.. currentmodule:: vale.utilities
 
 .. autofunction:: grad
 .. autofunction:: d_var
