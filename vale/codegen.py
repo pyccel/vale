@@ -643,7 +643,7 @@ class ValeCodegen(Codegen):
             if expr is a LinearForm or BilinearForm, then either dim or ast must
             be provided.
         """
-        from symcc.dsl.vale import LinearForm, BilinearForm
+        from vale.syntax import LinearForm, BilinearForm
 
         _expr   = None
         _name   = None

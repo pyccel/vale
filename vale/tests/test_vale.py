@@ -1,8 +1,8 @@
 # coding: utf-8
 
-from symcc.dsl.vale import ValeCodegen
-from symcc.dsl.vale import ValeParser
-from symcc.dsl.vale import construct_model
+from vale import ValeCodegen
+from vale import ValeParser
+from vale import construct_model
 
 from sympy import S
 from sympy.core.sympify import sympify

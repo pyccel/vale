@@ -3,12 +3,12 @@
 import os
 from sympy import Symbol, sympify
 
-from symcc.dsl.vale.utilities import grad, d_var, inner, outer, cross, dot
-from symcc.dsl.vale.syntax import (Vale, \
-                                   Expression, Term, Operand, \
-                                   FactorSigned, FactorUnary, FactorBinary, \
-                                   LinearForm, BilinearForm, \
-                                   Domain, Space, Field, Function, Real)
+from vale.utilities import grad, d_var, inner, outer, cross, dot
+from vale.syntax import (Vale, \
+                         Expression, Term, Operand, \
+                         FactorSigned, FactorUnary, FactorBinary, \
+                         LinearForm, BilinearForm, \
+                         Domain, Space, Field, Function, Real)
 
 from textx.metamodel import metamodel_from_str
 

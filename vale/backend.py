@@ -1,10 +1,10 @@
 # coding: utf-8
 
 import os
-from symcc.dsl.vale.codegen import ValeCodegen
-from symcc.dsl.vale.parser  import ValeParser
-from symcc.dsl.vale.parser  import ast_to_dict
-from symcc.dsl.vale.syntax  import (LinearForm, BilinearForm, \
+from vale.codegen import ValeCodegen
+from vale.parser  import ValeParser
+from vale.parser  import ast_to_dict
+from vale.syntax  import (LinearForm, BilinearForm, \
                                     Domain, Space, Field, Function, Real)
 
 
