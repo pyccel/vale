@@ -1,0 +1,19 @@
+Domain(dim=2,kind="structured") :: Omega
+Space(domain=Omega,kind='h1')   :: V
+Field(space=V)                  :: u
+Function(x,y)                   :: f 
+Real                            :: alpha
+Real                            :: beta
+
+l1(phi::V) := < alpha * dx(phi) * dy(phi) + f * u + phi >_Omega 
+#l1(phi::V) := < div(f) * phi >_Omega 
+#l2((v1,v2) :: W) := < alpha * dy(v1) - beta * dx(v2) >_Omega 
+#l3(v1,v2 :: W) := < alpha * dy(v1) - beta * dx(v2) >_Omega 
+
+a1(phi::V, psi::V) := < beta * dx(phi) * dx(psi) + u * dy(phi) * dy(psi) >_Omega
+#a1(phi::V, psi::V) := < outer(grad(phi), grad(psi)) >_Omega
+#a1(phi::V, psi::V) := < dot(grad(phi), grad(psi)) >_Omega
+
+#a1(phi::V, psi::V) := < alpha * grad(phi) * grad(psi) + beta * dx(phi) * psi >_Omega
+#a2(phi::V, psi::V) := < alpha * inner(curl(phi), curl(psi)) + beta * dx(phi) * psi >_Omega
+#a3((v1,v2) :: W,(u1,u2) :: W) := < dy(v1) * dy(u1) + dx(v2) * dx(u2) >_Omega
