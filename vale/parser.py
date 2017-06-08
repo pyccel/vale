@@ -12,10 +12,10 @@ from vale.syntax import (Vale, \
 
 from textx.metamodel import metamodel_from_str
 
-__all__ = ["ValeParser", "ast_to_dict"]
+__all__ = ["ValeParser", "ast_to_dict", "get_by_name"]
 
 # ...
-def _get_by_name(ast, name):
+def get_by_name(ast, name):
     """
     Returns an object from the AST by giving its name.
     """
@@ -166,13 +166,13 @@ class ValeParser(Parser):
                 user_functions = []
                 user_constants = []
 
-                space  = _get_by_name(ast, token.args.space)
-                domain = _get_by_name(ast, space.domain)
+                space  = get_by_name(ast, token.args.space)
+                domain = get_by_name(ast, space.domain)
 
                 expr = token.to_sympy()
                 free_symbols = expr.free_symbols
                 for symbol in free_symbols:
-                    var = _get_by_name(ast, str(symbol))
+                    var = get_by_name(ast, str(symbol))
                     if isinstance(var, Field):
                         user_fields.append(var.name)
                     elif isinstance(var, Function):
@@ -190,14 +190,14 @@ class ValeParser(Parser):
                 user_functions = []
                 user_constants = []
 
-                space_test  = _get_by_name(ast, token.args_test.space)
-                space_trial = _get_by_name(ast, token.args_trial.space)
-                domain      = _get_by_name(ast, space_test.domain)
+                space_test  = get_by_name(ast, token.args_test.space)
+                space_trial = get_by_name(ast, token.args_trial.space)
+                domain      = get_by_name(ast, space_test.domain)
 
                 expr = token.to_sympy()
                 free_symbols = expr.free_symbols
                 for symbol in free_symbols:
-                    var = _get_by_name(ast, str(symbol))
+                    var = get_by_name(ast, str(symbol))
                     if isinstance(var, Field):
                         user_fields.append(var.name)
                     elif isinstance(var, Function):
