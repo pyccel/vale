@@ -8,6 +8,7 @@ from vale.syntax import (Vale, \
                          Expression, Term, Operand, \
                          FactorSigned, FactorUnary, FactorBinary, \
                          LinearForm, BilinearForm, \
+                         BodyForm, SimpleBodyForm, ExpressionBodyForm, CallForm, \
                          Domain, Space, Field, Function, Real)
 
 from textx.metamodel import metamodel_from_str
@@ -139,6 +140,7 @@ class ValeParser(Parser):
                    Expression, Term, Operand, \
                    FactorSigned, FactorUnary, FactorBinary, \
                    LinearForm, BilinearForm, \
+                   BodyForm, SimpleBodyForm, ExpressionBodyForm, CallForm, \
                    Domain, Space, Field, Function, Real \
                    ]
 

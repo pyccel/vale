@@ -9,6 +9,7 @@ __all__ = ["Vale", \
            "Expression", "Term", "Operand", \
            "FactorSigned", "FactorUnary", "FactorBinary", \
            "LinearForm", "BilinearForm", \
+           "BodyForm", "SimpleBodyForm", "ExpressionBodyForm", "CallForm", \
            "Domain", "Space", "Field", "Function", "Real" \
            ]
 
@@ -185,8 +186,9 @@ class LinearForm(Form):
 
         * name
         * args
-        * domain
-        * expression
+        * body
+        * -- domain
+        * -- expression
 
         .. note::
             The grammar rule to define a LinearForm is
@@ -204,8 +206,21 @@ class LinearForm(Form):
         """
         self.name       = kwargs.pop('name')
         self.args       = kwargs.pop('args')
-        self.domain     = kwargs.pop('domain')
-        self.expression = kwargs.pop('expression')
+        self.body       = kwargs.pop('body')
+        self.blocks     = {}
+
+        if isinstance(self.body, SimpleBodyForm):
+            self.domain     = self.body.domain
+            self.expression = self.body.expression
+        elif isinstance(self.body, ExpressionBodyForm):
+            if isinstance(self.body, CallForm):
+                self.blocks[self.body.name] = self.body.args
+            else:
+                print("ExpressionBodyForm only implemented for CallForm")
+                raise()
+        else:
+            raise Exception('Could not parse the linear form body at position {}'
+                            .format(self._tx_position))
 
         namespace[self.name] = self
 
@@ -314,6 +329,40 @@ class BilinearForm(Form):
 #        print(">> Bilinear.n_deriv_fields : " + str(self.n_deriv_fields))
 
         return expr
+
+
+class BodyForm(object):
+    """Class representing the body of a linear/bilinear form."""
+    def __init__(self, **kwargs):
+
+        super(BodyForm, self).__init__()
+
+
+class SimpleBodyForm(BodyForm):
+    """Class representing the body of a simple linear/bilinear form."""
+    def __init__(self, **kwargs):
+
+        self.domain     = kwargs.pop('domain')
+        self.expression = kwargs.pop('expression')
+
+        super(SimpleBodyForm, self).__init__()
+
+
+class ExpressionBodyForm(BodyForm):
+    """Class representing the body of a linear/bilinear form as an expression."""
+    def __init__(self, **kwargs):
+
+        super(ExpressionBodyForm, self).__init__()
+
+
+class CallForm(ExpressionBodyForm):
+    """Class representing the call to a linear/bilinear form."""
+    def __init__(self, **kwargs):
+
+        self.name = kwargs.pop('name')
+        self.args = kwargs.pop('args')
+
+        super(ExpressionBodyForm, self).__init__()
 
 
 class ExpressionElement(object):

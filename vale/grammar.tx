@@ -36,9 +36,38 @@ LinearForm:
     args=ArgForm 
   RPAREN 
   DEF 
+  body=BodyForm
+;
+
+BilinearForm: 
+  name=ID 
+  LPAREN 
+    args_test=ArgForm 
+    COMMA
+    args_trial=ArgForm
+  RPAREN 
+  DEF 
   LTRIANGLE 
     expression=Expression
   RTRIANGLE SUBSCRIPT domain=ID 
+;
+
+BodyForm:
+  SimpleBodyForm | ExpressionBodyForm 
+;
+
+SimpleBodyForm:
+  LTRIANGLE 
+    expression=Expression
+  RTRIANGLE SUBSCRIPT domain=ID 
+;
+
+ExpressionBodyForm:
+  CallForm | Expression
+;
+
+CallForm:
+  name=ID LPAREN args+=ID[','] RPAREN
 ;
 
 ArgForm:
@@ -55,19 +84,6 @@ ArgFormParen:
 
 TestTrialFunction:
   ID
-;
-
-BilinearForm: 
-  name=ID 
-  LPAREN 
-    args_test=ArgForm 
-    COMMA
-    args_trial=ArgForm
-  RPAREN 
-  DEF 
-  LTRIANGLE 
-    expression=Expression
-  RTRIANGLE SUBSCRIPT domain=ID 
 ;
 
 Expression: 

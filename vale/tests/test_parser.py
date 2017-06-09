@@ -7,7 +7,7 @@ vale = ValeParser()
 # ...
 
 # ...
-def test_domain():
+def test_domain_1():
     # ... parse the Vale code
     ast = vale.parse("Domain(dim=1,kind='structured') :: Omega")
 
@@ -22,7 +22,7 @@ def test_domain():
 # ...
 
 # ...
-def test_space():
+def test_space_1():
     # ... parse the Vale code
     ast = vale.parse("Space(domain=Omega,kind='h1') :: V")
 
@@ -37,7 +37,7 @@ def test_space():
 # ...
 
 # ...
-def test_field():
+def test_field_1():
     # ... parse the Vale code
     ast = vale.parse("Field(space=V) :: phi")
 
@@ -51,7 +51,7 @@ def test_field():
 # ...
 
 # ...
-def test_function():
+def test_function_1():
     # ... parse the Vale code
     ast = vale.parse("Function(x,y) :: f")
 
@@ -65,7 +65,7 @@ def test_function():
 # ...
 
 # ...
-def test_linear_form():
+def test_linear_form_1():
     # ... parse the Vale code
     ast = vale.parse("b(v::V) := < f * v >_Omega")
 
@@ -86,7 +86,32 @@ def test_linear_form():
 # ...
 
 # ...
-def test_bilinear_form():
+def test_linear_form_2():
+    # ... parse the Vale code
+    ast = vale.parse("b(v::V) := f(v)")
+
+    token = get_by_name(ast, "b")
+    # ...
+
+    # ...
+    assert(token.name           == "b")
+    # TODO should be done later on
+#    assert(token.domain         == "Omega")
+
+    assert(token.args.space     == "V")
+    assert(token.args.functions == ["v"])
+
+    print token.blocks
+
+    # TODO add assert on expression.
+    #      need to annotate the ast
+#    print token.expression.expr
+#    assert(token.expression     == "Omega")
+    # ...
+# ...
+
+# ...
+def test_bilinear_form_1():
     # ... parse the Vale code
     ast = vale.parse("a(v::V, u::V) := < dx(v) * dx(u) >_Omega")
 
@@ -110,9 +135,15 @@ def test_bilinear_form():
 
 ######################################
 if __name__ == "__main__":
-    test_domain()
-    test_space()
-    test_field()
-    test_function()
-    test_linear_form()
-    test_bilinear_form()
+#    test_domain_1()
+
+#    test_space_1()
+
+#    test_field_1()
+
+#    test_function_1()
+
+#    test_linear_form_1()
+    test_linear_form_2()
+
+#    test_bilinear_form_1()
