@@ -141,13 +141,18 @@ def replace_symbol_derivatives(expr, f, B):
     B: str
         name of the new symbol
     """
-    expr = expr.subs({Symbol(f): Symbol(B)})
-    expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
+    if type(expr) == dict:
+        for key, form in expr.items():
+            expr[key] = replace_symbol_derivatives(form, f, B)
+    else:
+        expr = expr.subs({Symbol(f): Symbol(B)})
+        expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
 
-    for d in ["x", "y", "z"]:
-        expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
-    for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
-        expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+        for d in ["x", "y", "z"]:
+            expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+        for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
+            expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+
     return expr
 # ...
 
@@ -166,17 +171,19 @@ def replace_function_with_args(expr, f_name, args):
     args: list of str
         arguments to give to the function. example: ["x", "y"]
     """
-    dim = len(args)
-    print ">>> dim  : ", dim
-    if dim == 1:
-        f = Function(f_name)(Symbol(args[0]))
-    elif dim == 2:
-        f = Function(f_name)(Symbol(args[0]), Symbol(args[1]))
-    elif dim == 3:
-        f = Function(f_name)(Symbol(args[0]), Symbol(args[1]), Symbol(args[2]))
+    if type(expr) == dict:
+        for key, form in expr.items():
+            expr[key] = replace_function_with_args(form, f_name, args)
+    else:
+        dim = len(args)
+        if dim == 1:
+            f = Function(f_name)(Symbol(args[0]))
+        elif dim == 2:
+            f = Function(f_name)(Symbol(args[0]), Symbol(args[1]))
+        elif dim == 3:
+            f = Function(f_name)(Symbol(args[0]), Symbol(args[1]), Symbol(args[2]))
 
-    expr = expr.subs(Symbol(f_name), f)
-    print expr
+        expr = expr.subs(Symbol(f_name), f)
 
     return expr
 # ...

@@ -245,6 +245,9 @@ class LinearForm(Form):
     def to_sympy(self):
         if type(self.blocks) == dict:
             expr = {}
+            self.n_deriv        = 0
+            self.n_deriv_fields = 0
+
             for key, form in self.blocks.items():
                 expr[key] = form.to_sympy()
                 if len(form.args.functions) == 1:
@@ -255,6 +258,9 @@ class LinearForm(Form):
                 else:
                     raise ValueError("Expecting one argument but given: %s" % form.args.functions)
 
+                self.n_deriv        = max(self.n_deriv, form.n_deriv)
+                self.n_deriv_fields = max(self.n_deriv_fields, \
+                                          form.n_deriv_fields)
         else:
             for f in self.args.functions:
                 stack[f] = f
@@ -354,6 +360,9 @@ class BilinearForm(Form):
     def to_sympy(self):
         if type(self.blocks) == dict:
             expr = {}
+            self.n_deriv        = 0
+            self.n_deriv_fields = 0
+
             for key, form in self.blocks.items():
                 expr[key] = form.to_sympy()
                 if (len(form.args_test.functions) == 1) and \
@@ -374,6 +383,10 @@ class BilinearForm(Form):
                     # ...
                 else:
                     raise ValueError("Expecting one argument but given: %s" % form.args.functions)
+
+                self.n_deriv        = max(self.n_deriv, form.n_deriv)
+                self.n_deriv_fields = max(self.n_deriv_fields, \
+                                          form.n_deriv_fields)
         else:
             args = self.args_test.functions + self.args_trial.functions
             for f in args:

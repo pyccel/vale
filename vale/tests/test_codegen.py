@@ -94,8 +94,8 @@ def test_bilinear_form_21():
 ######################################
 if __name__ == "__main__":
 #    # ... code generation for linear forms
-    test_linear_form_11()
-#    test_linear_form_21()
+#    test_linear_form_11()
+    test_linear_form_21()
 #    # ...
 
 #    # ... code generation for bilinear forms
