@@ -195,7 +195,11 @@ def test_bilinear_form_2():
 # ...
 def test_bilinear_form_11():
     # ... parse the Vale code
-    ast = vale.parse("a(v::V, u::V) := < dx(v) * dx(u) >_Omega")
+    stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
+    stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
+    stmts += "a(v::V, u::V) := < dx(v) * dx(u) >_Omega"
+
+    ast = vale.parse(stmts)
 
     token = get_by_name(ast, "a")
     # ...
@@ -218,7 +222,9 @@ def test_bilinear_form_11():
 # ...
 def test_bilinear_form_21():
     # ... parse the Vale code
-    stmts  = "a1(v::V, u::V) := < dx(v) * dx(u) >_Omega" + "\n"
+    stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
+    stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
+    stmts += "a1(v::V, u::V) := < dx(v) * dx(u) >_Omega" + "\n"
     stmts += "a2(v::V, u::V) := < v * u >_Omega"         + "\n"
     stmts += "a3(v::V, u::V) := < dx(v) * u >_Omega"     + "\n"
     stmts += "a((v1,v2)::V,(u1,u2)::V) := a1(v1,u1) + a2(v2,u2) + a3(v1,u2)"
