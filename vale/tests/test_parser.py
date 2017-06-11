@@ -88,26 +88,33 @@ def test_linear_form_1():
 # ...
 def test_linear_form_2():
     # ... parse the Vale code
-    ast = vale.parse("b(v::V) := f(v)")
+    stmts  = "b1(v1::V) := < f * v1 >_Omega" + "\n"
+    stmts += "b2(v2::V) := < g * v2 >_Omega" + "\n"
+    stmts += "b((v1,v2)::V) := b1(v1) + b2(v2)"
+    ast = vale.parse(stmts)
 
     token = get_by_name(ast, "b")
     # ...
 
-    # ...
-    assert(token.name           == "b")
-    # TODO should be done later on
-#    assert(token.domain         == "Omega")
+    print token.expression
+    print token.expression.expr
 
-    assert(token.args.space     == "V")
-    assert(token.args.functions == ["v"])
-
-    print token.blocks
-
-    # TODO add assert on expression.
-    #      need to annotate the ast
-#    print token.expression.expr
-#    assert(token.expression     == "Omega")
-    # ...
+#    # ...
+#    assert(token.name           == "b")
+#    # TODO should be done later on
+##    assert(token.domain         == "Omega")
+#
+#    assert(token.args.space     == "V")
+#    assert(token.args.functions == ["v1", "v2"])
+#    print token.args.functions.index("v2")
+#
+#    print token.blocks
+#
+#    # TODO add assert on expression.
+#    #      need to annotate the ast
+##    print token.expression.expr
+##    assert(token.expression     == "Omega")
+#    # ...
 # ...
 
 # ...

@@ -63,7 +63,12 @@ SimpleBodyForm:
 ;
 
 ExpressionBodyForm:
-  CallForm | Expression
+  op=TermForm (op=PlusOrMinus op=TermForm)* 
+;
+
+// TODO only Mul should be available
+TermForm: 
+  op=CallForm (op=MulOrDiv op=CallForm)*
 ;
 
 CallForm:

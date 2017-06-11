@@ -9,7 +9,8 @@ __all__ = ["Vale", \
            "Expression", "Term", "Operand", \
            "FactorSigned", "FactorUnary", "FactorBinary", \
            "LinearForm", "BilinearForm", \
-           "BodyForm", "SimpleBodyForm", "ExpressionBodyForm", "CallForm", \
+           "BodyForm", "SimpleBodyForm", "ExpressionBodyForm", \
+           "TermForm", "CallForm", \
            "Domain", "Space", "Field", "Function", "Real" \
            ]
 
@@ -213,11 +214,9 @@ class LinearForm(Form):
             self.domain     = self.body.domain
             self.expression = self.body.expression
         elif isinstance(self.body, ExpressionBodyForm):
+            self.expression = self.body
             if isinstance(self.body, CallForm):
                 self.blocks[self.body.name] = self.body.args
-            else:
-                print("ExpressionBodyForm only implemented for CallForm")
-                raise()
         else:
             raise Exception('Could not parse the linear form body at position {}'
                             .format(self._tx_position))
@@ -346,23 +345,6 @@ class SimpleBodyForm(BodyForm):
         self.expression = kwargs.pop('expression')
 
         super(SimpleBodyForm, self).__init__()
-
-
-class ExpressionBodyForm(BodyForm):
-    """Class representing the body of a linear/bilinear form as an expression."""
-    def __init__(self, **kwargs):
-
-        super(ExpressionBodyForm, self).__init__()
-
-
-class CallForm(ExpressionBodyForm):
-    """Class representing the call to a linear/bilinear form."""
-    def __init__(self, **kwargs):
-
-        self.name = kwargs.pop('name')
-        self.args = kwargs.pop('args')
-
-        super(ExpressionBodyForm, self).__init__()
 
 
 class ExpressionElement(object):
@@ -516,3 +498,53 @@ class Operand(ExpressionElement):
         else:
             raise Exception('Unknown variable "{}" at position {}'
                             .format(op, self._tx_position))
+
+
+class ExpressionBodyForm(ExpressionElement):
+    @property
+    def expr(self):
+#        print "> ExpressionBodyForm "
+        ret = self.op[0].expr
+        for operation, operand in zip(self.op[1::2], self.op[2::2]):
+            if operand in namespace:
+                print("> Found operand : " + operand)
+            else:
+                print("> Could not Found operand : " + str(operand))
+            if operation in ['+', '-']:
+                ret += operation + ' ' + operand.expr
+            else:
+                raise Exception('Unknown operation "{}" at position {}'
+                                .format(operation, self._tx_position))
+        return ret
+
+
+class TermForm(ExpressionElement):
+    @property
+    def expr(self):
+#        print "> TermForm "
+        ret = self.op[0].expr
+        for operation, operand in zip(self.op[1::2], self.op[2::2]):
+            if operation == '*':
+                ret += '*' + ' ' + operand.expr
+            else:
+                raise Exception('Unknown operation "{}" at position {}'
+                                .format(operation, self._tx_position))
+        return ret
+
+
+class CallForm(ExpressionBodyForm):
+    """Class representing the call to a linear/bilinear form."""
+    def __init__(self, **kwargs):
+
+        self.name = kwargs.pop('name')
+        self.args = kwargs.pop('args')
+
+        namespace[self.name] = self
+
+#        super(ExpressionBodyForm, self).__init__()
+
+    @property
+    def expr(self):
+#        print "> CallForm"
+        return self.name
+
