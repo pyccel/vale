@@ -96,25 +96,11 @@ def test_linear_form_2():
     token = get_by_name(ast, "b")
     # ...
 
-    print token.expression
-    print token.expression.expr
-
-#    # ...
-#    assert(token.name           == "b")
-#    # TODO should be done later on
-##    assert(token.domain         == "Omega")
-#
-#    assert(token.args.space     == "V")
-#    assert(token.args.functions == ["v1", "v2"])
-#    print token.args.functions.index("v2")
-#
-#    print token.blocks
-#
-#    # TODO add assert on expression.
-#    #      need to annotate the ast
-##    print token.expression.expr
-##    assert(token.expression     == "Omega")
-#    # ...
+    # ...
+    assert(token.name == "b")
+    assert(token.blocks[0] == get_by_name(ast, "b1"))
+    assert(token.blocks[1] == get_by_name(ast, "b2"))
+    # ...
 # ...
 
 # ...

@@ -208,18 +208,7 @@ class LinearForm(Form):
         self.name       = kwargs.pop('name')
         self.args       = kwargs.pop('args')
         self.body       = kwargs.pop('body')
-        self.blocks     = {}
-
-        if isinstance(self.body, SimpleBodyForm):
-            self.domain     = self.body.domain
-            self.expression = self.body.expression
-        elif isinstance(self.body, ExpressionBodyForm):
-            self.expression = self.body
-            if isinstance(self.body, CallForm):
-                self.blocks[self.body.name] = self.body.args
-        else:
-            raise Exception('Could not parse the linear form body at position {}'
-                            .format(self._tx_position))
+        self.blocks     = None
 
         namespace[self.name] = self
 
@@ -231,14 +220,32 @@ class LinearForm(Form):
 
         self.set("space", self.args.space)
 
+        if isinstance(self.body, SimpleBodyForm):
+            self.domain     = self.body.domain
+            self.expression = self.body.expression
+        elif isinstance(self.body, ExpressionBodyForm):
+            self.blocks     = {}
+            # TODO to improve
+            stack["parent"] = self.name
+            self.body.expr
+            stack.pop("parent")
+        else:
+            raise Exception('Could not parse the linear form body at position {}'
+                            .format(self._tx_position))
+
     def to_sympy(self):
-        for f in self.args.functions:
+        for i,f in enumerate(self.args.functions):
             stack[f] = f
 
         settings["n_deriv"] = 0
         settings["n_deriv_fields"] = 0
 
-        expr = self.expression.expr
+        if type(self.blocks) == dict:
+            expr = {}
+            for key, form in self.blocks.items():
+                expr[key] = form.to_sympy()
+        else:
+            expr = self.expression.expr
 
         for f in self.args.functions:
             stack.pop(f)
@@ -506,10 +513,6 @@ class ExpressionBodyForm(ExpressionElement):
 #        print "> ExpressionBodyForm "
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
-            if operand in namespace:
-                print("> Found operand : " + operand)
-            else:
-                print("> Could not Found operand : " + str(operand))
             if operation in ['+', '-']:
                 ret += operation + ' ' + operand.expr
             else:
@@ -539,12 +542,19 @@ class CallForm(ExpressionBodyForm):
         self.name = kwargs.pop('name')
         self.args = kwargs.pop('args')
 
-        namespace[self.name] = self
-
 #        super(ExpressionBodyForm, self).__init__()
 
     @property
     def expr(self):
 #        print "> CallForm"
+        if self.name in namespace:
+            b  = namespace[stack["parent"]]
+            bi = namespace[self.name]
+            ind = b.args.functions.index(*bi.args.functions)
+            if type(ind) == int:
+                b.blocks[ind] = bi
+            else:
+                raise ValueError("Expecting an integer but found: %s" % ind)
+
         return self.name
 
