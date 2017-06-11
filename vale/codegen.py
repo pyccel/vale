@@ -695,12 +695,30 @@ class Formulation(Codegen):
         expr: sympy.Expression
             a symbolic expression describing the bilinear/linear form.
         """
-        contribution = Symbol("contribution")
         wvol = Symbol("wvol")
 
-        body       = [Assign(contribution, contribution + expr * wvol)]
+        body       = []
         local_vars = []
-        args       = [contribution]
+        args       = []
+        if type(expr) == dict:
+            for key, form in expr.items():
+                txt = "contribution_"
+                if type(key) == int:
+                    label = str(key)
+                else:
+                    print("TODO")
+                    raise()
+
+                txt += label
+                contribution = Symbol(txt)
+
+                body += [Assign(contribution, contribution + form * wvol)]
+                args += [contribution]
+        else:
+            contribution = Symbol("contribution")
+
+            body += [Assign(contribution, contribution + expr * wvol)]
+            args += [contribution]
 
         super(Formulation, self).__init__(body, local_vars=local_vars, args=args)
 
@@ -845,8 +863,7 @@ class ValeCodegen(Codegen):
             else:
                 raise ValueError("Unknown statement : %s" % stmt)
 
-        contribution = Symbol("contribution")
-
+        # ...
         g1 = Symbol('g1', integer=True)
         n1 = Symbol('n1', integer=True)
 
@@ -860,7 +877,30 @@ class ValeCodegen(Codegen):
             body = [For(g3, (1, n3, 1), body)]
         if _dim >= 2:
             body = [For(g2, (1, n2, 1), body)]
-        body  = [Assign(contribution, 0.), For(g1, (1, n1, 1), body)]
+        body = [For(g1, (1, n1, 1), body)]
+        # ...
+
+        # ...
+        if type(_expr) == dict:
+            for key, form in _expr.items():
+                txt = "contribution_"
+                if type(key) == int:
+                    label = str(key)
+                else:
+                    print("TODO")
+                    raise()
+
+                txt += label
+                contribution = Symbol(txt)
+                body.insert(0, Assign(contribution, 0.))
+        else:
+            contribution = Symbol("contribution")
+            body.insert(0, Assign(contribution, 0.))
+        # ...
+
+        # ...
+        self._expr = _expr
+        # ...
 
         super(ValeCodegen, self).__init__(body, \
                                             local_vars=local_vars, \
@@ -870,6 +910,11 @@ class ValeCodegen(Codegen):
     def name(self):
         """Returns the name of the current kernel."""
         return self._name
+
+    @property
+    def expr(self):
+        """Returns the expression to print"""
+        return self._expr
 
     def doprint(self, language):
         """Generate the current kernel in the given language.
@@ -881,9 +926,27 @@ class ValeCodegen(Codegen):
         local_vars  = self.local_vars
         return_vars = []
         if language in ["LUA"]:
-            args.remove(Symbol("contribution"))
-            local_vars.append(Symbol("contribution"))
-            return_vars.append(Result(Symbol("contribution")))
+            # ...
+            if type(self.expr) == dict:
+                for key, form in self.expr.items():
+                    txt = "contribution_"
+                    if type(key) == int:
+                        label = str(key)
+                    else:
+                        print("TODO")
+                        raise()
+
+                    txt += label
+                    contribution = Symbol(txt)
+
+                    args.remove(contribution)
+                    local_vars.append(contribution)
+                    return_vars.append(Result(contribution))
+            else:
+                args.remove(Symbol("contribution"))
+                local_vars.append(Symbol("contribution"))
+                return_vars.append(Result(Symbol("contribution")))
+            # ...
 
             [(f_name, f_code)] = codegen((self.name, self.body), language, \
                                          header=False, empty=True, \
