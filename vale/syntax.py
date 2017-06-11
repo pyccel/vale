@@ -234,27 +234,30 @@ class LinearForm(Form):
                             .format(self._tx_position))
 
     def to_sympy(self):
-        for i,f in enumerate(self.args.functions):
-            stack[f] = f
-
-        settings["n_deriv"] = 0
-        settings["n_deriv_fields"] = 0
-
         if type(self.blocks) == dict:
             expr = {}
             for key, form in self.blocks.items():
+                print form
                 expr[key] = form.to_sympy()
         else:
+            print "xxx"
+            for i,f in enumerate(self.args.functions):
+                stack[f] = f
+
+            settings["n_deriv"] = 0
+            settings["n_deriv_fields"] = 0
+
             expr = self.expression.expr
 
-        for f in self.args.functions:
-            stack.pop(f)
+            for f in self.args.functions:
+                stack.pop(f)
 
-        self.n_deriv        = settings["n_deriv"]
-        self.n_deriv_fields = settings["n_deriv_fields"]
+            self.n_deriv        = settings["n_deriv"]
+            self.n_deriv_fields = settings["n_deriv_fields"]
 
-        settings.pop("n_deriv")
-        settings.pop("n_deriv_fields")
+            settings.pop("n_deriv")
+            settings.pop("n_deriv_fields")
+            print "done"
 
 #        print(">> Linear.n_deriv        : " + str(self.n_deriv))
 #        print(">> Linear.n_deriv_fields : " + str(self.n_deriv_fields))
@@ -550,7 +553,7 @@ class CallForm(ExpressionBodyForm):
         if self.name in namespace:
             b  = namespace[stack["parent"]]
             bi = namespace[self.name]
-            ind = b.args.functions.index(*bi.args.functions)
+            ind = b.args.functions.index(*self.args)
             if type(ind) == int:
                 b.blocks[ind] = bi
             else:

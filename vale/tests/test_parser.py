@@ -83,8 +83,8 @@ def test_linear_form_1():
 # ...
 def test_linear_form_2():
     # ... parse the Vale code
-    stmts  = "b1(v1::V) := < f * v1 >_Omega" + "\n"
-    stmts += "b2(v2::V) := < g * v2 >_Omega" + "\n"
+    stmts  = "b1(v::V) := < f * v >_Omega" + "\n"
+    stmts += "b2(v::V) := < g * v >_Omega" + "\n"
     stmts += "b((v1,v2)::V) := b1(v1) + b2(v2)"
 
     ast = vale.parse(stmts)
@@ -147,7 +147,7 @@ def test_linear_form_21():
     # ...
 
     # ... sends the expression to sympy to check its validity
-#    expr = token.to_sympy()
+    expr = token.to_sympy()
     # ...
 # ...
 
@@ -185,8 +185,8 @@ if __name__ == "__main__":
 #    test_function_1()
 
 #    test_linear_form_1()
-#    test_linear_form_2()
+    test_linear_form_2()
 #    test_linear_form_11()
-    test_linear_form_21()
+#    test_linear_form_21()
 
 #    test_bilinear_form_1()
