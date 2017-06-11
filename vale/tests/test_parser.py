@@ -133,7 +133,7 @@ def test_linear_form_21():
     stmts += "Function(x)                     :: f"     + "\n"
     stmts += "Function(x)                     :: g"     + "\n"
     stmts += "b1(u::V) := < f * u >_Omega"              + "\n"
-    stmts += "b2(w::V) := < g * w >_Omega"              + "\n"
+    stmts += "b2(w::V) := < g * dx(w) >_Omega"          + "\n"
     stmts += "b((v1,v2)::V) := b1(v1) + b2(v2)"
 
     ast = vale.parse(stmts)
@@ -243,21 +243,32 @@ def test_bilinear_form_21():
 
 ######################################
 if __name__ == "__main__":
-#    test_domain_1()
+    # ... domain testing
+    test_domain_1()
+    # ...
 
-#    test_space_1()
+    # ... space testing
+    test_space_1()
+    # ...
 
-#    test_field_1()
+    # ... field testing
+    test_field_1()
+    # ...
 
-#    test_function_1()
+    # ... function testing
+    test_function_1()
+    # ...
 
-#    test_linear_form_1()
-#    test_linear_form_2()
-#    test_linear_form_11()
-#    test_linear_form_21()
+    # ... linear form testing
+    test_linear_form_1()
+    test_linear_form_2()
+    test_linear_form_11()
+    test_linear_form_21()
+    # ...
 
-#    test_bilinear_form_1()
-#    test_bilinear_form_2()
-#    test_bilinear_form_11()
+    # ... linear form testing
+    test_bilinear_form_1()
+    test_bilinear_form_2()
+    test_bilinear_form_11()
     test_bilinear_form_21()
-
+    # ...

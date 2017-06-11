@@ -11,7 +11,8 @@ __all__ = ["Vale", \
            "LinearForm", "BilinearForm", \
            "BodyForm", "SimpleBodyForm", "ExpressionBodyForm", \
            "TermForm", "CallForm", \
-           "Domain", "Space", "Field", "Function", "Real" \
+           "Domain", "Space", "Field", "Function", "Real", \
+           "replace_symbol_derivatives"
            ]
 
 
@@ -23,6 +24,29 @@ settings  = {}
 operators = {}
 operators["1"] = ["dx", "dy", "dz"]
 operators["2"] = ["dxx", "dyy", "dzz", "dxy", "dyz", "dxz"]
+
+# TODO use this function in codegen and everywhere it is needed, to avoid code
+#      duplication
+def replace_symbol_derivatives(expr, f, B):
+    """Replaces derivatives of the symbol f by those of B in a sympy expression.
+
+    expr: sympy.Expression
+        sympy expression, for linear or bilinear form.
+
+    f: str
+        name of the symbol to replace
+
+    B: str
+        name of the new symbol
+    """
+    expr = expr.subs({Symbol(f): Symbol(B)})
+    expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
+
+    for d in ["x", "y", "z"]:
+        expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+    for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
+        expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+    return expr
 
 
 class Vale(object):
@@ -250,7 +274,7 @@ class LinearForm(Form):
                     old = form.args.functions[0]
                     new = self.args.functions[key]
 
-                    expr[key] = expr[key].subs({Symbol(old): Symbol(new)})
+                    expr[key] = replace_symbol_derivatives(expr[key], old, new)
                 else:
                     raise ValueError("Expecting one argument but given: %s" % form.args.functions)
 
@@ -351,23 +375,46 @@ class BilinearForm(Form):
 
 
     def to_sympy(self):
-        args = self.args_test.functions + self.args_trial.functions
-        for f in args:
-            stack[f] = f
+        if type(self.blocks) == dict:
+            expr = {}
+            for key, form in self.blocks.items():
+                expr[key] = form.to_sympy()
+                if (len(form.args_test.functions) == 1) and \
+                   (len(form.args_trial.functions) == 1):
 
-        settings["n_deriv"] = 0
-        settings["n_deriv_fields"] = 0
+                    # ...
+                    old = form.args_test.functions[0]
+                    new = self.args_test.functions[key[0]]
 
-        expr = self.expression.expr
+                    expr[key] = replace_symbol_derivatives(expr[key], old, new)
+                    # ...
 
-        for f in args:
-            stack.pop(f)
+                    # ...
+                    old = form.args_trial.functions[0]
+                    new = self.args_trial.functions[key[1]]
 
-        self.n_deriv        = settings["n_deriv"]
-        self.n_deriv_fields = settings["n_deriv_fields"]
+                    expr[key] = replace_symbol_derivatives(expr[key], old, new)
+                    # ...
+                else:
+                    raise ValueError("Expecting one argument but given: %s" % form.args.functions)
+        else:
+            args = self.args_test.functions + self.args_trial.functions
+            for f in args:
+                stack[f] = f
 
-        settings.pop("n_deriv")
-        settings.pop("n_deriv_fields")
+            settings["n_deriv"] = 0
+            settings["n_deriv_fields"] = 0
+
+            expr = self.expression.expr
+
+            for f in args:
+                stack.pop(f)
+
+            self.n_deriv        = settings["n_deriv"]
+            self.n_deriv_fields = settings["n_deriv_fields"]
+
+            settings.pop("n_deriv")
+            settings.pop("n_deriv_fields")
 
 #        print(">> Bilinear.n_deriv        : " + str(self.n_deriv))
 #        print(">> Bilinear.n_deriv_fields : " + str(self.n_deriv_fields))
