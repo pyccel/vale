@@ -2,7 +2,8 @@
 
 from sympy import Symbol, sympify
 
-from vale.utilities import grad, d_var, inner, outer, cross, dot
+from vale.utilities import (grad, d_var, inner, outer, cross, dot, \
+                           replace_symbol_derivatives)
 
 
 __all__ = ["Vale", \
@@ -11,8 +12,7 @@ __all__ = ["Vale", \
            "LinearForm", "BilinearForm", \
            "BodyForm", "SimpleBodyForm", "ExpressionBodyForm", \
            "TermForm", "CallForm", \
-           "Domain", "Space", "Field", "Function", "Real", \
-           "replace_symbol_derivatives"
+           "Domain", "Space", "Field", "Function", "Real" \
            ]
 
 
@@ -24,29 +24,6 @@ settings  = {}
 operators = {}
 operators["1"] = ["dx", "dy", "dz"]
 operators["2"] = ["dxx", "dyy", "dzz", "dxy", "dyz", "dxz"]
-
-# TODO use this function in codegen and everywhere it is needed, to avoid code
-#      duplication
-def replace_symbol_derivatives(expr, f, B):
-    """Replaces derivatives of the symbol f by those of B in a sympy expression.
-
-    expr: sympy.Expression
-        sympy expression, for linear or bilinear form.
-
-    f: str
-        name of the symbol to replace
-
-    B: str
-        name of the new symbol
-    """
-    expr = expr.subs({Symbol(f): Symbol(B)})
-    expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
-
-    for d in ["x", "y", "z"]:
-        expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
-    for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
-        expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
-    return expr
 
 
 class Vale(object):
@@ -259,7 +236,6 @@ class LinearForm(Form):
             raise Exception('Could not parse the linear form body at position {}'
                             .format(self._tx_position))
 
-        self.set("dim", namespace[self.domain].dim)
         self.set("user_fields",    [])
         self.set("user_functions", [])
         self.set("user_constants", [])
@@ -367,7 +343,6 @@ class BilinearForm(Form):
             raise Exception('Could not parse the bilinear form body at position {}'
                             .format(self._tx_position))
 
-        self.set("dim", namespace[self.domain].dim)
         self.set("user_fields",    [])
         self.set("user_functions", [])
         self.set("user_constants", [])

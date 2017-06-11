@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from vale.parser  import ValeParser, get_by_name
+from vale.parser  import ValeParser, get_by_name, annotate_form
 from vale.codegen import ValeCodegen
 
 # ... creates an instance of Vale parser
@@ -18,6 +18,7 @@ def test_linear_form_11():
     ast = vale.parse(stmts)
 
     token = get_by_name(ast, "b")
+    token = annotate_form(token, ast)
     # ...
 
     # ...
@@ -40,6 +41,7 @@ def test_linear_form_21():
     ast = vale.parse(stmts)
 
     token = get_by_name(ast, "b")
+    token = annotate_form(token, ast)
     # ...
 
     # ...
@@ -58,6 +60,7 @@ def test_bilinear_form_11():
     ast = vale.parse(stmts)
 
     token = get_by_name(ast, "a")
+    token = annotate_form(token, ast)
     # ...
 
     # ...
@@ -79,6 +82,7 @@ def test_bilinear_form_21():
     ast = vale.parse(stmts)
 
     token = get_by_name(ast, "a")
+    token = annotate_form(token, ast)
     # ...
 
     # ...
@@ -90,11 +94,11 @@ def test_bilinear_form_21():
 ######################################
 if __name__ == "__main__":
 #    # ... code generation for linear forms
-#    test_linear_form_11()
+    test_linear_form_11()
 #    test_linear_form_21()
 #    # ...
 
-    # ... code generation for bilinear forms
-    test_bilinear_form_11()
+#    # ... code generation for bilinear forms
+#    test_bilinear_form_11()
 #    test_bilinear_form_21()
-    # ...
+#    # ...

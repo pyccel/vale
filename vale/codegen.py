@@ -5,10 +5,11 @@ from symcc.utilities.codegen import codegen, Result
 
 from sympy.core.singleton import S
 from sympy.core.symbol import Symbol
-from sympy.core.function import Function
 from sympy.abc import x,y,i
 from sympy.tensor import Idx, Indexed, IndexedBase
 from sympy.core.sympify import sympify
+
+from vale.utilities import replace_symbol_derivatives, replace_function_with_args
 
 __all__ = ["ValeCodegen"]
 
@@ -744,12 +745,7 @@ class ValeCodegen(Codegen):
         if isinstance(expr, LinearForm):
             _expr = expr.to_sympy()
             for f in expr.args.functions:
-                B = "Ni"
-                _expr = _expr.subs({Symbol(f): Symbol(B + "_0")})
-                for d in ["x", "y", "z"]:
-                    _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
-                for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
-                    _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+                _expr = replace_symbol_derivatives(_expr, f, "Ni")
 
             _name = "kernel_" + expr.name
             _dim  = expr.attributs["dim"]
@@ -760,14 +756,8 @@ class ValeCodegen(Codegen):
             # update calls to functions
             user_functions = expr.attributs["user_functions"]
             for f_name in user_functions:
-                if _dim == 1:
-                    f = Function(f_name)(Symbol("x"))
-                elif _dim == 2:
-                    f = Function(f_name)(Symbol("x"), Symbol("y"))
-                elif _dim == 3:
-                    f = Function(f_name)(Symbol("x"), Symbol("y"), Symbol("z"))
-
-                _expr = _expr.subs(Symbol(f_name), f)
+                args = ["x", "y", "z"][:_dim]
+                _expr = replace_function_with_args(_expr, f_name, args)
 
             # list of fields
             user_fields = expr.attributs["user_fields"]
@@ -780,20 +770,10 @@ class ValeCodegen(Codegen):
         elif isinstance(expr, BilinearForm):
             _expr = expr.to_sympy()
             for f in expr.args_test.functions:
-                B = "Ni"
-                _expr = _expr.subs({Symbol(f): Symbol(B + "_0")})
-                for d in ["x", "y", "z"]:
-                    _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
-                for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
-                    _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+                _expr = replace_symbol_derivatives(_expr, f, "Ni")
 
             for f in expr.args_trial.functions:
-                B = "Nj"
-                _expr = _expr.subs({Symbol(f): Symbol(B + "_0")})
-                for d in ["x", "y", "z"]:
-                    _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
-                for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
-                    _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
+                _expr = replace_symbol_derivatives(_expr, f, "Nj")
 
             _name  = "kernel_" + expr.name
             _dim   = expr.attributs["dim"]
@@ -806,14 +786,8 @@ class ValeCodegen(Codegen):
             # update calls to functions
             user_functions = expr.attributs["user_functions"]
             for f_name in user_functions:
-                if _dim == 1:
-                    f = Function(f_name)(Symbol("x"))
-                elif _dim == 2:
-                    f = Function(f_name)(Symbol("x"), Symbol("y"))
-                elif _dim == 3:
-                    f = Function(f_name)(Symbol("x"), Symbol("y"), Symbol("z"))
-
-                _expr = _expr.subs(Symbol(f_name), f)
+                args = ["x", "y", "z"][:_dim]
+                _expr = replace_function_with_args(_expr, f_name, args)
 
             # list of fields
             user_fields = expr.attributs["user_fields"]

@@ -14,7 +14,7 @@ from vale.syntax import (Vale, \
 
 from textx.metamodel import metamodel_from_str
 
-__all__ = ["ValeParser", "ast_to_dict", "get_by_name"]
+__all__ = ["ValeParser", "ast_to_dict", "get_by_name", "annotate_form"]
 
 # ...
 def get_by_name(ast, name):
@@ -36,6 +36,68 @@ def ast_to_dict(ast):
     for token in ast.declarations:
         tokens[token.name] = token
     return tokens
+# ...
+
+# ...
+def annotate_form(token, ast):
+    """Annotates a linear/bilinear form using the ast.
+
+    token: vale.syntax.LinearForm or vale.syntax.BilinearForm
+        a linear/bilinear form object to annotate
+
+    ast: list
+        abstract tree
+    """
+    if isinstance(token, LinearForm):
+        user_fields    = []
+        user_functions = []
+        user_constants = []
+
+        space  = get_by_name(ast, token.args.space)
+        domain = get_by_name(ast, space.domain)
+
+        expr = token.to_sympy()
+        free_symbols = expr.free_symbols
+        for symbol in free_symbols:
+            var = get_by_name(ast, str(symbol))
+            if isinstance(var, Field):
+                user_fields.append(var.name)
+            elif isinstance(var, Function):
+                user_functions.append(var.name)
+            elif isinstance(var, Real):
+                user_constants.append(var.name)
+
+        token.set("dim", domain.dim)
+        token.set("user_fields", user_fields)
+        token.set("user_functions", user_functions)
+        token.set("user_constants", user_constants)
+
+    elif isinstance(token, BilinearForm):
+        user_fields    = []
+        user_functions = []
+        user_constants = []
+
+        space_test  = get_by_name(ast, token.args_test.space)
+        space_trial = get_by_name(ast, token.args_trial.space)
+        domain      = get_by_name(ast, space_test.domain)
+
+        expr = token.to_sympy()
+        free_symbols = expr.free_symbols
+        for symbol in free_symbols:
+            var = get_by_name(ast, str(symbol))
+            if isinstance(var, Field):
+                user_fields.append(var.name)
+            elif isinstance(var, Function):
+                user_functions.append(var.name)
+            elif isinstance(var, Real):
+                user_constants.append(var.name)
+
+        token.set("dim", domain.dim)
+        token.set("user_fields", user_fields)
+        token.set("user_functions", user_functions)
+        token.set("user_constants", user_constants)
+
+    return token
 # ...
 
 class Parser(object):
@@ -165,54 +227,7 @@ class ValeParser(Parser):
 
         # ... annotating the AST
         for token in ast.declarations:
-            if isinstance(token, LinearForm):
-                user_fields    = []
-                user_functions = []
-                user_constants = []
-
-                space  = get_by_name(ast, token.args.space)
-                domain = get_by_name(ast, space.domain)
-
-                expr = token.to_sympy()
-                free_symbols = expr.free_symbols
-                for symbol in free_symbols:
-                    var = get_by_name(ast, str(symbol))
-                    if isinstance(var, Field):
-                        user_fields.append(var.name)
-                    elif isinstance(var, Function):
-                        user_functions.append(var.name)
-                    elif isinstance(var, Real):
-                        user_constants.append(var.name)
-
-                token.set("dim", domain.dim)
-                token.set("user_fields", user_fields)
-                token.set("user_functions", user_functions)
-                token.set("user_constants", user_constants)
-
-            elif isinstance(token, BilinearForm):
-                user_fields    = []
-                user_functions = []
-                user_constants = []
-
-                space_test  = get_by_name(ast, token.args_test.space)
-                space_trial = get_by_name(ast, token.args_trial.space)
-                domain      = get_by_name(ast, space_test.domain)
-
-                expr = token.to_sympy()
-                free_symbols = expr.free_symbols
-                for symbol in free_symbols:
-                    var = get_by_name(ast, str(symbol))
-                    if isinstance(var, Field):
-                        user_fields.append(var.name)
-                    elif isinstance(var, Function):
-                        user_functions.append(var.name)
-                    elif isinstance(var, Real):
-                        user_constants.append(var.name)
-
-                token.set("dim", domain.dim)
-                token.set("user_fields", user_fields)
-                token.set("user_functions", user_functions)
-                token.set("user_constants", user_constants)
+            annotate_form(token, ast)
         # ...
 
         return ast
