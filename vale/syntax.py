@@ -314,8 +314,8 @@ class BilinearForm(Form):
         self.name       = kwargs.pop('name')
         self.args_test  = kwargs.pop('args_test')
         self.args_trial = kwargs.pop('args_trial')
-        self.domain     = kwargs.pop('domain')
-        self.expression = kwargs.pop('expression')
+        self.body       = kwargs.pop('body')
+        self.blocks     = None
 
         namespace[self.name] = self
 
@@ -327,6 +327,28 @@ class BilinearForm(Form):
 
         self.set("space_test",  self.args_test.space)
         self.set("space_trial", self.args_trial.space)
+
+        if isinstance(self.body, SimpleBodyForm):
+            self.domain     = self.body.domain
+            self.expression = self.body.expression
+        elif isinstance(self.body, ExpressionBodyForm):
+            self.blocks     = {}
+
+            # ... 
+            stack["parent"] = self.name
+            self.body.expr
+            stack.pop("parent")
+            # ... 
+
+            # ... TODO check domain
+            for key, form in self.blocks.items():
+                self.domain = form.domain
+                break
+            # ... 
+        else:
+            raise Exception('Could not parse the bilinear form body at position {}'
+                            .format(self._tx_position))
+
 
     def to_sympy(self):
         args = self.args_test.functions + self.args_trial.functions
@@ -565,12 +587,26 @@ class CallForm(ExpressionBodyForm):
 #        print "> CallForm"
         if self.name in namespace:
             b  = namespace[stack["parent"]]
-            bi = namespace[self.name]
-            ind = b.args.functions.index(*self.args)
-            if type(ind) == int:
-                b.blocks[ind] = bi
+
+            if isinstance(b, LinearForm):
+                if len(self.args) != 1:
+                    raise Exception('Expecting exactly one argument at position {}.'
+                                    .format(self._tx_position))
+
+                i_row = b.args.functions.index(self.args[0])
+                bi = namespace[self.name]
+                b.blocks[i_row] = bi
+            elif isinstance(b, BilinearForm):
+                if len(self.args) != 2:
+                    raise Exception('Expecting exactly two argument at position {}.'
+                                    .format(self._tx_position))
+
+                i_row = b.args_test.functions.index(self.args[0])
+                i_col = b.args_trial.functions.index(self.args[1])
+                bi = namespace[self.name]
+                b.blocks[i_row, i_col] = bi
             else:
-                raise ValueError("Expecting an integer but found: %s" % ind)
+                raise ValueError("Expecting a Linear or Bilinear form.")
 
         return self.name
 

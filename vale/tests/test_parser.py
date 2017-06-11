@@ -168,11 +168,76 @@ def test_bilinear_form_1():
     assert(token.args_test.functions  == ["v"])
     assert(token.args_trial.space     == "V")
     assert(token.args_trial.functions == ["u"])
+    # ...
+# ...
 
-    # TODO add assert on expression.
-    #      need to annotate the ast
-#    print token.expression.expr
-#    assert(token.expression     == "Omega")
+# ...
+def test_bilinear_form_2():
+    # ... parse the Vale code
+    stmts  = "a1(v::V, u::V) := < dx(v) * dx(u) >_Omega" + "\n"
+    stmts += "a2(v::V, u::V) := < v * u >_Omega"         + "\n"
+    stmts += "a3(v::V, u::V) := < dx(v) * u >_Omega"     + "\n"
+    stmts += "a((v1,v2)::V,(u1,u2)::V) := a1(v1,u1) + a2(v2,u2) + a3(v1,u2)"
+
+    ast = vale.parse(stmts)
+
+    token = get_by_name(ast, "a")
+    # ...
+
+    # ...
+    assert(token.name == "a")
+    assert(token.blocks[0,0] == get_by_name(ast, "a1"))
+    assert(token.blocks[1,1] == get_by_name(ast, "a2"))
+    assert(token.blocks[0,1] == get_by_name(ast, "a3"))
+    # ...
+# ...
+
+# ...
+def test_bilinear_form_11():
+    # ... parse the Vale code
+    ast = vale.parse("a(v::V, u::V) := < dx(v) * dx(u) >_Omega")
+
+    token = get_by_name(ast, "a")
+    # ...
+
+    # ...
+    assert(token.name                 == "a")
+    assert(token.domain               == "Omega")
+    assert(token.args_test.space      == "V")
+    assert(token.args_test.functions  == ["v"])
+    assert(token.args_trial.space     == "V")
+    assert(token.args_trial.functions == ["u"])
+    # ...
+
+    # ... sends the expression to sympy to check its validity
+    expr = token.to_sympy()
+    print expr
+    # ...
+# ...
+
+# ...
+def test_bilinear_form_21():
+    # ... parse the Vale code
+    stmts  = "a1(v::V, u::V) := < dx(v) * dx(u) >_Omega" + "\n"
+    stmts += "a2(v::V, u::V) := < v * u >_Omega"         + "\n"
+    stmts += "a3(v::V, u::V) := < dx(v) * u >_Omega"     + "\n"
+    stmts += "a((v1,v2)::V,(u1,u2)::V) := a1(v1,u1) + a2(v2,u2) + a3(v1,u2)"
+
+    ast = vale.parse(stmts)
+
+    token = get_by_name(ast, "a")
+    # ...
+
+    # ...
+    assert(token.name == "a")
+    assert(token.blocks[0,0] == get_by_name(ast, "a1"))
+    assert(token.blocks[1,1] == get_by_name(ast, "a2"))
+    assert(token.blocks[0,1] == get_by_name(ast, "a3"))
+    # ...
+
+    # ... sends the expression to sympy to check its validity
+    expr = token.to_sympy()
+    print expr
     # ...
 # ...
 
@@ -189,6 +254,10 @@ if __name__ == "__main__":
 #    test_linear_form_1()
 #    test_linear_form_2()
 #    test_linear_form_11()
-    test_linear_form_21()
+#    test_linear_form_21()
 
 #    test_bilinear_form_1()
+#    test_bilinear_form_2()
+#    test_bilinear_form_11()
+    test_bilinear_form_21()
+
