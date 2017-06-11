@@ -746,7 +746,7 @@ class ValeCodegen(Codegen):
             for f in expr.args.functions:
                 B = "Ni"
                 _expr = _expr.subs({Symbol(f): Symbol(B + "_0")})
-                for d in ["x", "y", "z"][:_dim]:
+                for d in ["x", "y", "z"]:
                     _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
                 for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
                     _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
@@ -782,7 +782,7 @@ class ValeCodegen(Codegen):
             for f in expr.args_test.functions:
                 B = "Ni"
                 _expr = _expr.subs({Symbol(f): Symbol(B + "_0")})
-                for d in ["x", "y", "z"][:_dim]:
+                for d in ["x", "y", "z"]:
                     _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
                 for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
                     _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
@@ -790,7 +790,7 @@ class ValeCodegen(Codegen):
             for f in expr.args_trial.functions:
                 B = "Nj"
                 _expr = _expr.subs({Symbol(f): Symbol(B + "_0")})
-                for d in ["x", "y", "z"][:_dim]:
+                for d in ["x", "y", "z"]:
                     _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
                 for d in ["xx", "yy", "zz", "xy", "yz", "xz"]:
                     _expr = _expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})

@@ -238,12 +238,6 @@ class LinearForm(Form):
 
         super(LinearForm, self).__init__(**kwargs)
 
-        self.set("user_fields",    [])
-        self.set("user_functions", [])
-        self.set("user_constants", [])
-
-        self.set("space", self.args.space)
-
         if isinstance(self.body, SimpleBodyForm):
             self.domain     = self.body.domain
             self.expression = self.body.expression
@@ -264,6 +258,13 @@ class LinearForm(Form):
         else:
             raise Exception('Could not parse the linear form body at position {}'
                             .format(self._tx_position))
+
+        self.set("dim", namespace[self.domain].dim)
+        self.set("user_fields",    [])
+        self.set("user_functions", [])
+        self.set("user_constants", [])
+
+        self.set("space", self.args.space)
 
     def to_sympy(self):
         if type(self.blocks) == dict:
@@ -345,13 +346,6 @@ class BilinearForm(Form):
 
         super(BilinearForm, self).__init__(**kwargs)
 
-        self.set("user_fields",    [])
-        self.set("user_functions", [])
-        self.set("user_constants", [])
-
-        self.set("space_test",  self.args_test.space)
-        self.set("space_trial", self.args_trial.space)
-
         if isinstance(self.body, SimpleBodyForm):
             self.domain     = self.body.domain
             self.expression = self.body.expression
@@ -372,6 +366,14 @@ class BilinearForm(Form):
         else:
             raise Exception('Could not parse the bilinear form body at position {}'
                             .format(self._tx_position))
+
+        self.set("dim", namespace[self.domain].dim)
+        self.set("user_fields",    [])
+        self.set("user_functions", [])
+        self.set("user_constants", [])
+
+        self.set("space_test",  self.args_test.space)
+        self.set("space_trial", self.args_trial.space)
 
 
     def to_sympy(self):
