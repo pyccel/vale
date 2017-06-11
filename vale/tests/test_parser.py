@@ -77,11 +77,6 @@ def test_linear_form_1():
     assert(token.domain         == "Omega")
     assert(token.args.space     == "V")
     assert(token.args.functions == ["v"])
-
-    # TODO add assert on expression.
-    #      need to annotate the ast
-#    print token.expression.expr
-#    assert(token.expression     == "Omega")
     # ...
 # ...
 
@@ -91,6 +86,7 @@ def test_linear_form_2():
     stmts  = "b1(v1::V) := < f * v1 >_Omega" + "\n"
     stmts += "b2(v2::V) := < g * v2 >_Omega" + "\n"
     stmts += "b((v1,v2)::V) := b1(v1) + b2(v2)"
+
     ast = vale.parse(stmts)
 
     token = get_by_name(ast, "b")
@@ -100,6 +96,58 @@ def test_linear_form_2():
     assert(token.name == "b")
     assert(token.blocks[0] == get_by_name(ast, "b1"))
     assert(token.blocks[1] == get_by_name(ast, "b2"))
+    # ...
+# ...
+
+# ...
+def test_linear_form_11():
+    # ... parse the Vale code
+    stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
+    stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
+    stmts += "Function(x)                     :: f"     + "\n"
+    stmts += "b(v::V) := < f * v >_Omega"               + "\n"
+
+    ast = vale.parse(stmts)
+
+    token = get_by_name(ast, "b")
+    # ...
+
+    # ...
+    assert(token.name           == "b")
+    assert(token.domain         == "Omega")
+    assert(token.args.space     == "V")
+    assert(token.args.functions == ["v"])
+    # ...
+
+    # ... sends the expression to sympy to check its validity
+    expr = token.to_sympy()
+    # ...
+# ...
+
+# ...
+def test_linear_form_21():
+    # ... parse the Vale code
+    stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
+    stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
+    stmts += "Function(x)                     :: f"     + "\n"
+    stmts += "Function(x)                     :: g"     + "\n"
+    stmts += "b1(v1::V) := < f * v1 >_Omega"            + "\n"
+    stmts += "b2(v2::V) := < g * v2 >_Omega"            + "\n"
+    stmts += "b((v1,v2)::V) := b1(v1) + b2(v2)"
+
+    ast = vale.parse(stmts)
+
+    token = get_by_name(ast, "b")
+    # ...
+
+    # ...
+    assert(token.name == "b")
+    assert(token.blocks[0] == get_by_name(ast, "b1"))
+    assert(token.blocks[1] == get_by_name(ast, "b2"))
+    # ...
+
+    # ... sends the expression to sympy to check its validity
+#    expr = token.to_sympy()
     # ...
 # ...
 
@@ -137,6 +185,8 @@ if __name__ == "__main__":
 #    test_function_1()
 
 #    test_linear_form_1()
-    test_linear_form_2()
+#    test_linear_form_2()
+#    test_linear_form_11()
+    test_linear_form_21()
 
 #    test_bilinear_form_1()

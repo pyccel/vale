@@ -1,4 +1,4 @@
-Domain(dim=3,kind="structured") :: Omega
+Domain(dim=3,kind='structured') :: Omega
 Space(domain=Omega,kind='h1')   :: V
 Field(space=V)                  :: phi 
 Function(x,y,z)                 :: f 
