@@ -121,6 +121,7 @@ def test_linear_form_11():
 
     # ... sends the expression to sympy to check its validity
     expr = token.to_sympy()
+    print expr
     # ...
 # ...
 
@@ -131,8 +132,8 @@ def test_linear_form_21():
     stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
     stmts += "Function(x)                     :: f"     + "\n"
     stmts += "Function(x)                     :: g"     + "\n"
-    stmts += "b1(v1::V) := < f * v1 >_Omega"            + "\n"
-    stmts += "b2(v2::V) := < g * v2 >_Omega"            + "\n"
+    stmts += "b1(u::V) := < f * u >_Omega"              + "\n"
+    stmts += "b2(w::V) := < g * w >_Omega"              + "\n"
     stmts += "b((v1,v2)::V) := b1(v1) + b2(v2)"
 
     ast = vale.parse(stmts)
@@ -148,6 +149,7 @@ def test_linear_form_21():
 
     # ... sends the expression to sympy to check its validity
     expr = token.to_sympy()
+    print expr
     # ...
 # ...
 
@@ -185,8 +187,8 @@ if __name__ == "__main__":
 #    test_function_1()
 
 #    test_linear_form_1()
-    test_linear_form_2()
+#    test_linear_form_2()
 #    test_linear_form_11()
-#    test_linear_form_21()
+    test_linear_form_21()
 
 #    test_bilinear_form_1()

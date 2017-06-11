@@ -225,10 +225,18 @@ class LinearForm(Form):
             self.expression = self.body.expression
         elif isinstance(self.body, ExpressionBodyForm):
             self.blocks     = {}
-            # TODO to improve
+
+            # ... 
             stack["parent"] = self.name
             self.body.expr
             stack.pop("parent")
+            # ... 
+
+            # ... TODO check domain
+            for key, form in self.blocks.items():
+                self.domain = form.domain
+                break
+            # ... 
         else:
             raise Exception('Could not parse the linear form body at position {}'
                             .format(self._tx_position))
@@ -237,11 +245,17 @@ class LinearForm(Form):
         if type(self.blocks) == dict:
             expr = {}
             for key, form in self.blocks.items():
-                print form
                 expr[key] = form.to_sympy()
+                if len(form.args.functions) == 1:
+                    old = form.args.functions[0]
+                    new = self.args.functions[key]
+
+                    expr[key] = expr[key].subs({Symbol(old): Symbol(new)})
+                else:
+                    raise ValueError("Expecting one argument but given: %s" % form.args.functions)
+
         else:
-            print "xxx"
-            for i,f in enumerate(self.args.functions):
+            for f in self.args.functions:
                 stack[f] = f
 
             settings["n_deriv"] = 0
@@ -257,7 +271,6 @@ class LinearForm(Form):
 
             settings.pop("n_deriv")
             settings.pop("n_deriv_fields")
-            print "done"
 
 #        print(">> Linear.n_deriv        : " + str(self.n_deriv))
 #        print(">> Linear.n_deriv_fields : " + str(self.n_deriv_fields))
