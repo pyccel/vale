@@ -968,7 +968,7 @@ class ValeCodegen(Codegen):
                     for i in range(0, n_rows):
                         if not expr.has_key(i):
                             label = str(i)
-                            return_vars.append(Result(S.Zero, \
+                            return_vars.append(Result(sympify("0.0"), \
                                                       name=Symbol("output_"+label)))
 
                 elif type(self.n_blocks) in [tuple, list]:
@@ -978,7 +978,7 @@ class ValeCodegen(Codegen):
                         for j in range(0, n_cols):
                             if not expr.has_key((i,j)):
                                 label = str(i) + str(j)
-                                return_vars.append(Result(S.Zero, \
+                                return_vars.append(Result(sympify("0.0"), \
                                                           name=Symbol("output_"+label)))
                 else:
                     raise TypeError("expecting int or (tuple, list) but given : %s" % type(key))
