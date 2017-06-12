@@ -6,7 +6,8 @@ from sympy.core.function import Function
 
 __all__ = ["grad", "d_var", "dot", \
            "cross", "outer", "inner", \
-           "replace_symbol_derivatives"]
+           "replace_symbol_derivatives", \
+           "replace_function_with_args"]
 
 
 # ...
@@ -145,8 +146,8 @@ def replace_symbol_derivatives(expr, f, B):
         for key, form in expr.items():
             expr[key] = replace_symbol_derivatives(form, f, B)
     else:
-        expr = expr.subs({Symbol(f): Symbol(B)})
-        expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
+        expr = expr.subs({Symbol(f): Symbol(B + "_0")})
+#        expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
 
         for d in ["x", "y", "z"]:
             expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})

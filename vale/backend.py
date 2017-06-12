@@ -6,6 +6,7 @@ from vale.parser  import (ValeParser, ast_to_dict)
 from vale.syntax  import (LinearForm, BilinearForm, \
                           Domain, Space, Field, Function, Real)
 
+DEBUG = False
 
 __all__ = ["construct_model"]
 
@@ -197,9 +198,10 @@ class ClappAST(object):
                 new_code = header + includes + body
 
                 # ARA
-                f = open(filename, "a")
-                f.write(new_code)
-                f.close()
+                if not DEBUG:
+                    f = open(filename, "a")
+                    f.write(new_code)
+                    f.close()
                 # ...
 
                 # ... creates the matrix object
@@ -278,9 +280,10 @@ class ClappAST(object):
                 new_code = header + includes + body
 
                 # ARA
-                f = open(filename, "a")
-                f.write(new_code)
-                f.close()
+                if not DEBUG:
+                    f = open(filename, "a")
+                    f.write(new_code)
+                    f.close()
                 # ...
 
                 # ... creates the matrix object
@@ -363,16 +366,17 @@ def construct_model(ast_or_filename, backend="clapp", **settings):
         # ...
         folder = "." + str(backend)
         # ARA
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        if not DEBUG:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
 
-        for the_file in os.listdir(folder):
-            file_path = os.path.join(folder, the_file)
-            try:
-                if os.path.isfile(file_path):
-                    os.unlink(file_path)
-            except Exception as e:
-                print(e)
+            for the_file in os.listdir(folder):
+                file_path = os.path.join(folder, the_file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                except Exception as e:
+                    print(e)
 
         settings["directory"] = folder
         # ...
