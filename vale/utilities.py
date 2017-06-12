@@ -147,7 +147,7 @@ def replace_symbol_derivatives(expr, f, B):
             expr[key] = replace_symbol_derivatives(form, f, B)
     else:
         expr = expr.subs({Symbol(f): Symbol(B + "_0")})
-#        expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
+        expr = expr.subs({Symbol(f + "_0"): Symbol(B + "_0")})
 
         for d in ["x", "y", "z"]:
             expr = expr.subs({Symbol(f + "_" + d): Symbol(B + "_" + d)})
