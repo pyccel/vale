@@ -5,6 +5,7 @@ from symcc.utilities.codegen import codegen, Result
 
 from sympy.core.singleton import S
 from sympy.core.symbol import Symbol
+from sympy import Matrix
 from sympy.abc import x,y,i
 from sympy.tensor import Idx, Indexed, IndexedBase
 from sympy.core.sympify import sympify
@@ -930,7 +931,12 @@ class ValeCodegen(Codegen):
         if language in ["LUA"]:
             # ...
             if type(self.expr) == dict:
-                for key, form in self.expr.items():
+                # we order the dictionary with respect to the keys
+                from collections import OrderedDict, Counter
+                expr = OrderedDict(sorted(self.expr.items(), \
+                                          key= lambda t:str(t[0]).lower()))
+
+                for key, form in expr.items():
                     txt = "contribution_"
                     if type(key) == int:
                         label = str(key)
@@ -944,11 +950,14 @@ class ValeCodegen(Codegen):
 
                     args.remove(contribution)
                     local_vars.append(contribution)
-                    return_vars.append(Result(contribution))
+                    print label
+                    return_vars.append(Result(contribution, \
+                                              name=Symbol("output_"+label)))
             else:
                 args.remove(Symbol("contribution"))
                 local_vars.append(Symbol("contribution"))
-                return_vars.append(Result(Symbol("contribution")))
+                return_vars.append(Result(Symbol("contribution"), \
+                                          name=Symbol("output")))
             # ...
 
             [(f_name, f_code)] = codegen((self.name, self.body), language, \

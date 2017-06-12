@@ -210,6 +210,7 @@ class LinearForm(Form):
         self.args       = kwargs.pop('args')
         self.body       = kwargs.pop('body')
         self.blocks     = None
+        self._n_rows    = 1
 
         namespace[self.name] = self
 
@@ -232,6 +233,12 @@ class LinearForm(Form):
                 self.domain = form.domain
                 break
             # ... 
+
+            # ... compute n_rows 
+            for key, form in self.blocks.items():
+                if self._n_rows < key + 1:
+                    self._n_rows = key + 1
+            # ... 
         else:
             raise Exception('Could not parse the linear form body at position {}'
                             .format(self._tx_position))
@@ -241,6 +248,14 @@ class LinearForm(Form):
         self.set("user_constants", [])
 
         self.set("space", self.args.space)
+
+    @property
+    def n_rows(self):
+        """
+        Returns the number of rows of the linear form. different from 1 when
+        using block linear forms.
+        """
+        return self._n_rows
 
     def to_sympy(self):
         if type(self.blocks) == dict:
@@ -323,6 +338,8 @@ class BilinearForm(Form):
         self.args_trial = kwargs.pop('args_trial')
         self.body       = kwargs.pop('body')
         self.blocks     = None
+        self._n_rows    = 1
+        self._n_cols    = 1
 
         namespace[self.name] = self
 
@@ -345,6 +362,14 @@ class BilinearForm(Form):
                 self.domain = form.domain
                 break
             # ... 
+
+            # ... compute n_rows and n_cols 
+            for key, form in self.blocks.items():
+                if self._n_rows < key[0] + 1:
+                    self._n_rows = key[0] + 1
+                if self._n_cols < key[1] + 1:
+                    self._n_cols = key[1] + 1
+            # ... 
         else:
             raise Exception('Could not parse the bilinear form body at position {}'
                             .format(self._tx_position))
@@ -356,6 +381,21 @@ class BilinearForm(Form):
         self.set("space_test",  self.args_test.space)
         self.set("space_trial", self.args_trial.space)
 
+    @property
+    def n_rows(self):
+        """
+        Returns the number of rows of the bilinear form. different from 1 when
+        using block bilinear forms.
+        """
+        return self._n_rows
+
+    @property
+    def n_cols(self):
+        """
+        Returns the number of columns of the bilinear form. different from 1 when
+        using block bilinear forms.
+        """
+        return self._n_cols
 
     def to_sympy(self):
         if type(self.blocks) == dict:
