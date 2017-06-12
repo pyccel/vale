@@ -705,9 +705,10 @@ class Formulation(Codegen):
                 txt = "contribution_"
                 if type(key) == int:
                     label = str(key)
+                elif type(key) in [tuple, list]:
+                    label = str(key[0]) + str(key[1])
                 else:
-                    print("TODO")
-                    raise()
+                    raise TypeError("expecting int or (tuple, list) but given : %s" % type(key))
 
                 txt += label
                 contribution = Symbol(txt)
@@ -886,9 +887,10 @@ class ValeCodegen(Codegen):
                 txt = "contribution_"
                 if type(key) == int:
                     label = str(key)
+                elif type(key) in [tuple, list]:
+                    label = str(key[0]) + str(key[1])
                 else:
-                    print("TODO")
-                    raise()
+                    raise TypeError("expecting int or (tuple, list) but given : %s" % type(key))
 
                 txt += label
                 contribution = Symbol(txt)
@@ -932,9 +934,10 @@ class ValeCodegen(Codegen):
                     txt = "contribution_"
                     if type(key) == int:
                         label = str(key)
+                    elif type(key) in [tuple, list]:
+                        label = str(key[0]) + str(key[1])
                     else:
-                        print("TODO")
-                        raise()
+                        raise TypeError("expecting int or (tuple, list) but given : %s" % type(key))
 
                     txt += label
                     contribution = Symbol(txt)

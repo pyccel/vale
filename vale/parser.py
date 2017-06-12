@@ -94,15 +94,27 @@ def annotate_form(token, ast):
         domain      = get_by_name(ast, space_test.domain)
 
         expr = token.to_sympy()
-        free_symbols = expr.free_symbols
-        for symbol in free_symbols:
-            var = get_by_name(ast, str(symbol))
-            if isinstance(var, Field):
-                user_fields.append(var.name)
-            elif isinstance(var, Function):
-                user_functions.append(var.name)
-            elif isinstance(var, Real):
-                user_constants.append(var.name)
+        if type(expr) == dict:
+            for key, form in expr.items():
+                free_symbols = form.free_symbols
+                for symbol in free_symbols:
+                    var = get_by_name(ast, str(symbol))
+                    if isinstance(var, Field):
+                        user_fields.append(var.name)
+                    elif isinstance(var, Function):
+                        user_functions.append(var.name)
+                    elif isinstance(var, Real):
+                        user_constants.append(var.name)
+        else:
+            free_symbols = expr.free_symbols
+            for symbol in free_symbols:
+                var = get_by_name(ast, str(symbol))
+                if isinstance(var, Field):
+                    user_fields.append(var.name)
+                elif isinstance(var, Function):
+                    user_functions.append(var.name)
+                elif isinstance(var, Real):
+                    user_constants.append(var.name)
 
         token.set("dim", domain.dim)
         token.set("user_fields", user_fields)
