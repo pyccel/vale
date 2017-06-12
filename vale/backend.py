@@ -6,7 +6,8 @@ from vale.parser  import (ValeParser, ast_to_dict)
 from vale.syntax  import (LinearForm, BilinearForm, \
                           Domain, Space, Field, Function, Real)
 
-DEBUG = False
+#DEBUG = False
+DEBUG = True
 
 __all__ = ["construct_model"]
 
@@ -100,17 +101,25 @@ class ClappAST(object):
         Converts the AST to CLAPP Python objects
 
         context: clapp.fema.context.Context
-          a fema context object
+            a fema context object
 
         ddm_params: clapp.plaf.parameters.ddm.Ddm
-          a plaf ddm parameter object
+            a plaf ddm parameter object
 
         mapping: clapp.spl.mapping.Mapping
-          a spl mapping object
+            a spl mapping object
+
+        verbose: bool
+            talk more
         """
         context   = settings["context"]
         mapping   = settings["mapping"]
         directory = settings["directory"]
+
+        try:
+            verbose = settings["verbose"]
+        except:
+            verbose = False
 
         try:
             ddm_params = settings["ddm_params"]
@@ -205,19 +214,17 @@ class ClappAST(object):
                 # ...
 
                 # ... creates the matrix object
-                #     TODO use n_components from space
-                vector = ClappVector(n_blocks=1)
+                vector = ClappVector(n_blocks=token.n_rows)
                 # ...
 
                 # ... create an assembler  from a context
-                #     TODO how to pass verbose?
                 assembler = ClappAssembler(spaces=[space, space], \
                                            fields=fields, \
                                            vectors=[vector], \
                                            mapping=mapping, \
                                            ddm_parameters=ddm_params, \
                                            n_deriv=n_deriv, \
-                                           verbose=False)
+                                           verbose=verbose)
                 # ...
 
                 # ...
@@ -287,20 +294,18 @@ class ClappAST(object):
                 # ...
 
                 # ... creates the matrix object
-                #     TODO set n_block_rows/cols
-                matrix = ClappMatrix(n_block_rows=1, \
-                                     n_block_cols=1)
+                matrix = ClappMatrix(n_block_rows=token.n_rows, \
+                                     n_block_cols=token.n_cols)
                 # ...
 
                 # ... create an assembler  from a context
-                #     TODO how to set verbose?
                 assembler = ClappAssembler(spaces=[space_test, space_trial], \
                                            fields=fields, \
                                            matrices=[matrix], \
                                            mapping=mapping, \
                                            ddm_parameters=ddm_params, \
                                            n_deriv=n_deriv, \
-                                           verbose=True)
+                                           verbose=verbose)
                 # ...
 
                 # ...
