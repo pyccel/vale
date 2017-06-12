@@ -235,9 +235,7 @@ class LinearForm(Form):
             # ... 
 
             # ... compute n_rows 
-            for key, form in self.blocks.items():
-                if self._n_rows < key + 1:
-                    self._n_rows = key + 1
+            self._n_rows = len(self.args.functions)
             # ... 
         else:
             raise Exception('Could not parse the linear form body at position {}'
@@ -364,11 +362,8 @@ class BilinearForm(Form):
             # ... 
 
             # ... compute n_rows and n_cols 
-            for key, form in self.blocks.items():
-                if self._n_rows < key[0] + 1:
-                    self._n_rows = key[0] + 1
-                if self._n_cols < key[1] + 1:
-                    self._n_cols = key[1] + 1
+            self._n_rows = len(self.args_test.functions)
+            self._n_cols = len(self.args_trial.functions)
             # ... 
         else:
             raise Exception('Could not parse the bilinear form body at position {}'

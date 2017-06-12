@@ -761,6 +761,7 @@ class ValeCodegen(Codegen):
         user_fields = []
         n_deriv = 1
         n_deriv_fields = 0
+        n_blocks = 1
 
         if isinstance(expr, LinearForm):
             _expr = expr.to_sympy()
@@ -786,6 +787,7 @@ class ValeCodegen(Codegen):
 
             n_deriv        = expr.n_deriv
             n_deriv_fields = expr.n_deriv_fields
+            n_blocks       = expr.n_rows
 
         elif isinstance(expr, BilinearForm):
             _expr = expr.to_sympy()
@@ -816,6 +818,7 @@ class ValeCodegen(Codegen):
 
             n_deriv        = expr.n_deriv
             n_deriv_fields = expr.n_deriv_fields
+            n_blocks       = [expr.n_rows, expr.n_cols]
 
         else:
             if not(dim is None) or not(name is None):
@@ -903,6 +906,7 @@ class ValeCodegen(Codegen):
 
         # ...
         self._expr = _expr
+        self._n_blocks = n_blocks
         # ...
 
         super(ValeCodegen, self).__init__(body, \
@@ -918,6 +922,11 @@ class ValeCodegen(Codegen):
     def expr(self):
         """Returns the expression to print"""
         return self._expr
+
+    @property
+    def n_blocks(self):
+        """Returns the number of blocks to print"""
+        return self._n_blocks
 
     def doprint(self, language):
         """Generate the current kernel in the given language.
@@ -950,9 +959,31 @@ class ValeCodegen(Codegen):
 
                     args.remove(contribution)
                     local_vars.append(contribution)
-                    print label
                     return_vars.append(Result(contribution, \
                                               name=Symbol("output_"+label)))
+
+                # ... linear form case
+                if type(self.n_blocks) == int:
+                    n_rows = self.n_blocks
+                    for i in range(0, n_rows):
+                        if not expr.has_key(i):
+                            label = str(i)
+                            return_vars.append(Result(S.Zero, \
+                                                      name=Symbol("output_"+label)))
+
+                elif type(self.n_blocks) in [tuple, list]:
+                    n_rows = self.n_blocks[0]
+                    n_cols = self.n_blocks[1]
+                    for i in range(0, n_rows):
+                        for j in range(0, n_cols):
+                            if not expr.has_key((i,j)):
+                                label = str(i) + str(j)
+                                return_vars.append(Result(S.Zero, \
+                                                          name=Symbol("output_"+label)))
+                else:
+                    raise TypeError("expecting int or (tuple, list) but given : %s" % type(key))
+                # ...
+
             else:
                 args.remove(Symbol("contribution"))
                 local_vars.append(Symbol("contribution"))
