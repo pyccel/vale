@@ -60,43 +60,35 @@ def run(filename):
     # ...
 
     # ... set expression for the function g
-    g.set("0")
+    g.set("4")
     # ...
 
     # ...
     assembler_b.assemble()
     assembler_a.assemble()
     # ...
-#    rhs.export("rhs.txt")
-#    matrix.export("matrix.mm")
 
     # ...
-    from clapp.plaf.parameters.linear_solver import LAPACK_LU
     from clapp.plaf.parameters.linear_solver import PACK_GMRES
     from clapp.plaf.parameters.linear_solver import DRIVER
     from clapp.plaf.linear_solver  import Linear_solver
 
-#    params = DRIVER(solver=LAPACK_LU())
     params = DRIVER(solver=PACK_GMRES())
     linsol = Linear_solver(matrix=matrix, dirname="input", parameters=params)
     # ...
 
     # ...
     z = rhs.get()
-    print "z0 : ", z[0,:]
-    print "z1 : ", z[1,:]
-    n,m = z.shape
-    y = linsol.solve(z.ravel())
+    y = linsol.solve(z)
     # ...
 
-    # ... exports the field
-    print "y0 : ", y[:m]
-    print "y1 : ", y[m:]
-    phi.set(y[:m])
-    psi.set(y[m:])
-    # ...
+    # ... we use the rhs to retrieve the solution as blocks
+    rhs.set(y)
+    y = rhs.get(as_matrix=True)
 
-#    import sys; sys.exit(0)
+    phi.set(y[0,:])
+    psi.set(y[1,:])
+    # ...
 
     # ... plot field using matplotlib
     import matplotlib.pyplot as plt
@@ -132,7 +124,7 @@ def run(filename):
     plt.clf()
     # ...
 
-    print ("> run using ", filename, " passed.")
+    print ("> run using " + str(filename) + " passed.")
     # ...
 # ...
 
