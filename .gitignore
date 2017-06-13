@@ -9,3 +9,4 @@
 vale/tests/.clapp
 vale/tests/*.mm
 vale/tests/*.txt
+vale/tests/*.vtk

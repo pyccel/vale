@@ -8,7 +8,6 @@ from sympy import S
 from sympy.core.sympify import sympify
 import numpy as np
 
-
 # ...
 def run(filename):
     # ...
@@ -41,10 +40,12 @@ def run(filename):
 
     # ... accessing the pde declarations
     V           = pde["V"]
-    phi           = pde["phi"]
+    phi         = pde["phi"]
+    psi         = pde["psi"]
     form_a      = pde["a"]
     form_b      = pde["b"]
     f           = pde["f"]
+    g           = pde["g"]
     # ...
 
     # ...
@@ -58,42 +59,58 @@ def run(filename):
     f.set("2*x*(1-x)*y*(1-y) + 2*y*(1-y)*z*(1-z) + 2*z*(1-z)*x*(1-x)")
     # ...
 
-    # ...
-    assembler_a.assemble()
-    assembler_b.assemble()
+    # ... set expression for the function g
+    g.set("4*x*(1-x)*y*(1-y) + 4*y*(1-y)*z*(1-z) + 4*z*(1-z)*x*(1-x)")
     # ...
 
     # ...
-    from clapp.plaf.parameters.linear_solver import LAPACK_LU
+    assembler_b.assemble()
+    assembler_a.assemble()
+    # ...
+
+    # ...
+    from clapp.plaf.parameters.linear_solver import PACK_GMRES
     from clapp.plaf.parameters.linear_solver import DRIVER
     from clapp.plaf.linear_solver  import Linear_solver
 
-    params = DRIVER(solver=LAPACK_LU())
+    params = DRIVER(solver=PACK_GMRES())
     linsol = Linear_solver(matrix=matrix, dirname="input", parameters=params)
     # ...
 
     # ...
-    y = linsol.solve(rhs)
+    z = rhs.get()
+    y = linsol.solve(z)
     # ...
 
-    # ... exports the field
-    phi.set(y)
+    # ... we use the rhs to retrieve the solution as blocks
+    rhs.set(y)
+    y = rhs.get(as_matrix=True)
+
+    phi.set(y[0,:])
+    psi.set(y[1,:])
     # ...
 
     # ... exports phi to vtk file. Can be used in Visit and Paraview
-    filename_out = "uh_3d_"+filename.split('/')[-1].split('.')[0] + ".vtk"
+    filename_out = "phi_3d_"+filename.split('/')[-1].split('.')[0] + ".vtk"
     phi.to_vtk(filename_out, mapping=mapping, n_pts=20)
+
+    filename_out = "psi_3d_"+filename.split('/')[-1].split('.')[0] + ".vtk"
+    psi.to_vtk(filename_out, mapping=mapping, n_pts=20)
     # ...
 
     # ... define the analytical solution for phi
     from clapp.vale.expressions.function import Function
 
     phi_analytic = Function("phi_analytic", "x*(1-x)*y*(1-y)*z*(1-z)", args=["x", "y", "z"])
+    psi_analytic = Function("psi_analytic", "2*x*(1-x)*y*(1-y)*z*(1-z)", args=["x", "y", "z"])
     # ...
 
     # ... compute L2 error
     x = phi.compute_l2_error(mapping=mapping, function=phi_analytic)[0,0]
-    print ("    L2-error norm : " + str(x))
+    print ("    L2-error norm (phi): " + str(x))
+
+    x = psi.compute_l2_error(mapping=mapping, function=psi_analytic)[0,0]
+    print ("    L2-error norm (psi): " + str(x))
     # ...
 
     # ...
@@ -101,7 +118,7 @@ def run(filename):
     os.system(cmd)
     # ...
 
-    print ("> run using ", filename, " passed.")
+    print ("> run using " + str(filename) + " passed.")
     # ...
 # ...
 
@@ -116,7 +133,7 @@ import os
 cmd = "rm -rf input"
 os.system(cmd)
 
-run(filename="inputs/3d/poisson.vl")
+run(filename="inputs/3d/poisson_block.vl")
 
 cmd = "rm -rf input"
 os.system(cmd)
