@@ -180,19 +180,19 @@ class Pullback(Codegen):
             # ...
         elif dim == 2:
             # ...
-            gg = Idx('gg', 4 * n1 * n2)
+            ggg = Idx('ggg', 4 * n1 * n2)
 
-            body.append(Assign(gg, sympify('4*(g - 1) + 1')))
-            body.append(Assign(jux, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('4*(gg - 1) + 1')))
+            body.append(Assign(jux, arr_jacobian[ggg]))
 
-            body.append(Assign(gg, sympify('4*(g - 1) + 2')))
-            body.append(Assign(jvx, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('4*(gg - 1) + 2')))
+            body.append(Assign(jvx, arr_jacobian[ggg]))
 
-            body.append(Assign(gg, sympify('4*(g - 1) + 3')))
-            body.append(Assign(juy, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('4*(gg - 1) + 3')))
+            body.append(Assign(juy, arr_jacobian[ggg]))
 
-            body.append(Assign(gg, sympify('4*(g - 1) + 4')))
-            body.append(Assign(jvy, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('4*(gg - 1) + 4')))
+            body.append(Assign(jvy, arr_jacobian[ggg]))
             # ...
 
             # ...
@@ -215,36 +215,36 @@ class Pullback(Codegen):
             # ...
         elif dim == 3:
             # ...
-            gg = Idx('gg', 9 * n1 * n2 * n3)
+            ggg = Idx('ggg', 9 * n1 * n2 * n3)
 
-            body.append(Assign(gg, sympify('9*(g - 1) + 1')))
-            body.append(Assign(jux, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 1')))
+            body.append(Assign(jux, arr_jacobian[ggg]))
 
-            body.append(Assign(gg, sympify('9*(g - 1) + 2')))
-            body.append(Assign(jvx, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 2')))
+            body.append(Assign(jvx, arr_jacobian[ggg]))
 
-            body.append(Assign(gg, sympify('9*(g - 1) + 3')))
-            body.append(Assign(jwx, arr_jacobian[gg]))
-
-
-            body.append(Assign(gg, sympify('9*(g - 1) + 4')))
-            body.append(Assign(juy, arr_jacobian[gg]))
-
-            body.append(Assign(gg, sympify('9*(g - 1) + 5')))
-            body.append(Assign(jvy, arr_jacobian[gg]))
-
-            body.append(Assign(gg, sympify('9*(g - 1) + 6')))
-            body.append(Assign(jwy, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 3')))
+            body.append(Assign(jwx, arr_jacobian[ggg]))
 
 
-            body.append(Assign(gg, sympify('9*(g - 1) + 7')))
-            body.append(Assign(juz, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 4')))
+            body.append(Assign(juy, arr_jacobian[ggg]))
 
-            body.append(Assign(gg, sympify('9*(g - 1) + 8')))
-            body.append(Assign(jvz, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 5')))
+            body.append(Assign(jvy, arr_jacobian[ggg]))
 
-            body.append(Assign(gg, sympify('9*(g - 1) + 9')))
-            body.append(Assign(jwz, arr_jacobian[gg]))
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 6')))
+            body.append(Assign(jwy, arr_jacobian[ggg]))
+
+
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 7')))
+            body.append(Assign(juz, arr_jacobian[ggg]))
+
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 8')))
+            body.append(Assign(jvz, arr_jacobian[ggg]))
+
+            body.append(Assign(ggg, sympify('9*(gg - 1) + 9')))
+            body.append(Assign(jwz, arr_jacobian[ggg]))
             # ...
 
             # ...
@@ -366,22 +366,22 @@ class Geometry(Codegen):
 
             body.append(Assign(wvol, arr_wvol[g1]))
         if dim == 2:
-            g = Idx('g', n1 * n2)
-            body.append(Assign(g, sympify('(g1 - 1)*n2 + g2')))
+            gg = Idx('gg', n1 * n2)
+            body.append(Assign(gg, sympify('(g1 - 1)*n2 + g2')))
 
-            body.append(Assign(x, arr_x[g]))
-            body.append(Assign(y, arr_y[g]))
+            body.append(Assign(x, arr_x[gg]))
+            body.append(Assign(y, arr_y[gg]))
 
-            body.append(Assign(wvol, arr_wvol[g]))
+            body.append(Assign(wvol, arr_wvol[gg]))
         if dim == 3:
-            g = Idx('g', n1 * n2 * n3)
-            body.append(Assign(g, sympify('(g1 - 1)*n2*n3 + (g2 - 1)*n3 + g3')))
+            gg = Idx('gg', n1 * n2 * n3)
+            body.append(Assign(gg, sympify('(g1 - 1)*n2*n3 + (g2 - 1)*n3 + g3')))
 
-            body.append(Assign(x, arr_x[g]))
-            body.append(Assign(y, arr_y[g]))
-            body.append(Assign(z, arr_z[g]))
+            body.append(Assign(x, arr_x[gg]))
+            body.append(Assign(y, arr_y[gg]))
+            body.append(Assign(z, arr_z[gg]))
 
-            body.append(Assign(wvol, arr_wvol[g]))
+            body.append(Assign(wvol, arr_wvol[gg]))
         # ...
 
         super(Geometry, self).__init__(body, local_vars=local_vars, args=args)
@@ -650,7 +650,7 @@ class Field(Codegen):
             if dim == 1:
                 expr = '(g1-1)*n_fields*(n_deriv+1) + (i_field-1)*(n_deriv+1) + i_deriv + 1'
             else:
-                expr = '(g-1)*n_fields*(n_deriv+1) + (i_field-1)*(n_deriv+1) + i_deriv + 1'
+                expr = '(gg-1)*n_fields*(n_deriv+1) + (i_field-1)*(n_deriv+1) + i_deriv + 1'
             expr = sympify(expr)
             expr = expr.subs({Symbol("i_field"): i_field})
             expr = expr.subs({Symbol("i_deriv"): i_deriv})

@@ -2,8 +2,8 @@ Domain(dim=2,kind='structured') :: Omega
 Space(domain=Omega,kind='h1')   :: V
 Field(space=V)                  :: phi
 Field(space=V)                  :: psi
-Function(x)                     :: f
-Function(x)                     :: g
+Function(x,y)                   :: f
+Function(x,y)                   :: g
 
 b1(u::V) := < f * u >_Omega
 b2(w::V) := < g * w >_Omega

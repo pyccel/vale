@@ -6,8 +6,8 @@ from vale.parser  import (ValeParser, ast_to_dict)
 from vale.syntax  import (LinearForm, BilinearForm, \
                           Domain, Space, Field, Function, Real)
 
-#DEBUG = False
-DEBUG = True
+DEBUG = False
+#DEBUG = True
 
 __all__ = ["construct_model"]
 
