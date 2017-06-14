@@ -28,6 +28,46 @@ def test_linear_form_11():
 # ...
 
 # ...
+def test_linear_form_12():
+    # ... parse the Vale code
+    stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
+    stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
+    stmts += "Function(x)                     :: f"     + "\n"
+    stmts += "b(v::V) := < f * dx(v) >_Omega"           + "\n"
+
+    ast = vale.parse(stmts)
+
+    token = get_by_name(ast, "b")
+    token = annotate_form(token, ast)
+    # ...
+
+    # ...
+    kernel = ValeCodegen(token)
+    print (kernel.doprint("LUA"))
+    # ...
+# ...
+
+# ...
+def test_linear_form_13():
+    # ... parse the Vale code
+    stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
+    stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
+    stmts += "Function(x)                     :: f"     + "\n"
+    stmts += "b(v::V) := < f * dxx(v) >_Omega"           + "\n"
+
+    ast = vale.parse(stmts)
+
+    token = get_by_name(ast, "b")
+    token = annotate_form(token, ast)
+    # ...
+
+    # ...
+    kernel = ValeCodegen(token)
+    print (kernel.doprint("LUA"))
+    # ...
+# ...
+
+# ...
 def test_linear_form_21():
     # ... parse the Vale code
     stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
@@ -118,8 +158,11 @@ def test_bilinear_form_21():
 if __name__ == "__main__":
 #    # ... code generation for linear forms
 #    test_linear_form_11()
+#    test_linear_form_12()
+    test_linear_form_13()
+
 #    test_linear_form_21()
-    test_linear_form_31()
+#    test_linear_form_31()
 #    # ...
 
 #    # ... code generation for bilinear forms

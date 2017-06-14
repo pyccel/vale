@@ -14,6 +14,8 @@ from vale.utilities import replace_symbol_derivatives, replace_function_with_arg
 
 __all__ = ["ValeCodegen"]
 
+# TODO add _ at the begining of all generated variables in LUA
+
 
 class Codegen(object):
     """Abstract class for code generation.
@@ -96,6 +98,7 @@ class Pullback(Codegen):
         # ...
 
         # ... pullback definition
+        #     TODO rename jux to u_x ?
         jux = Symbol('jux')
         jvx = Symbol('jvx')
         jwx = Symbol('jwx')
@@ -107,6 +110,12 @@ class Pullback(Codegen):
         juz = Symbol('juz')
         jvz = Symbol('jvz')
         jwz = Symbol('jwz')
+        # ...
+
+        # ... second order derivatives of the mapping
+        juxx = Symbol('juxx')
+        jvxx = Symbol('jvxx')
+        jwxx = Symbol('jwxx')
         # ...
 
         # ...
@@ -163,20 +172,30 @@ class Pullback(Codegen):
         # ...
         if dim == 1:
             # ...
-            g1 = Idx('g1', n1)
-            body.append(Assign(jux, arr_jacobian[g1]))
+            ggg = Idx('ggg', min(1, n_deriv) * n1)
+            # ...
+
+            # ...
+            if n_deriv > 1:
+                body.append(Assign(ggg, sympify('2*(g1 - 1) + 1')))
+                body.append(Assign(jux, arr_jacobian[ggg]))
+
+                body.append(Assign(ggg, sympify('2*(g1 - 1) + 2')))
+                body.append(Assign(juxx, arr_jacobian[ggg]))
+            else:
+                body.append(Assign(jux, arr_jacobian[g1]))
             # ...
 
             # ...
             body += [Assign(Ni_x, jux * Ni_u)]
             if n_deriv > 1:
-                body += [Assign(Ni_xx, Ni_uu)]
+                body += [Assign(Ni_xx, juxx * Ni_u + jux * jux * Ni_uu)]
 
             if trial:
                 body += [Assign(Nj_x, jux * Nj_u)]
 
                 if n_deriv > 1:
-                    body += [Assign(Nj_xx, Nj_uu)]
+                    body += [Assign(Nj_xx, juxx * Nj_u + jux * jux * Nj_uu)]
             # ...
         elif dim == 2:
             # ...
@@ -289,6 +308,8 @@ class Pullback(Codegen):
             if dim == 1:
                 local_vars += [Ni_uu]
                 local_vars += [Ni_xx]
+
+                local_vars += [juxx]
             elif dim == 2:
                 local_vars += [Ni_uu, Ni_uv, Ni_vv]
                 local_vars += [Ni_xx, Ni_xy, Ni_yy]
