@@ -196,7 +196,8 @@ class ClappAST(object):
         _dict = {}
         for token in ast.declarations:
             if isinstance(token, Domain):
-                print ("> No translation for Domain node. TODO")
+                if DEBUG:
+                    print ("> No translation for Domain node. TODO")
             elif isinstance(token, Space):
                 if token.kind == "union":
                     print ("> Found a union space. Will not be treated.")
@@ -215,11 +216,6 @@ class ClappAST(object):
                                   args=args)
                 _dict[token.name] = X
             elif isinstance(token, LinearForm):
-                # ... TODO use constants
-#                constants = []
-#                for name in token.constants:
-#                    constants.append(_dict[name])
-
                 # ...
                 fields = []
                 for name in token.attributs["user_fields"]:
@@ -257,6 +253,10 @@ class ClappAST(object):
                     txt = "function_" + name
                     includes += txt + " = require '" + txt + "'" + " \n"
                     includes += "setmetatable(_ENV, { __index=" + txt + " })" + " \n"
+
+                if len(token.attributs["user_constants"]) > 0:
+                    includes += "constants = require 'constants'" + " \n"
+                    includes += "setmetatable(_ENV, { __index=constants })" + " \n"
                 # ...
 
                 header = code.split(")")[0] + ")\n"
@@ -296,11 +296,6 @@ class ClappAST(object):
                 _dict[token.name] = d
                 # ...
             elif isinstance(token, BilinearForm):
-                # ... TODO use constants
-#                constants = []
-#                for name in token.constants:
-#                    constants.append(_dict[name])
-
                 # ...
                 fields = []
                 for name in token.attributs["user_fields"]:
@@ -339,6 +334,10 @@ class ClappAST(object):
                     txt = "function_" + name
                     includes += txt + " = require '" + txt + "'" + " \n"
                     includes += "setmetatable(_ENV, { __index=" + txt + " })" + " \n"
+
+                if len(token.attributs["user_constants"]) > 0:
+                    includes += "constants = require 'constants'" + " \n"
+                    includes += "setmetatable(_ENV, { __index=constants })" + " \n"
                 # ...
 
                 header = code.split(")")[0] + ")\n"
@@ -383,15 +382,8 @@ class ClappAST(object):
                 _dict[token.name] = d
                 # ...
             elif isinstance(token, Real):
-                print ("> No translation for Real node. TODO")
-
-
-#            if type(token) is Number:
-#                # TODO gets value from the pde file
-#                from sympy.printing.codeprinter      import Assignment
-#                from sympy import Symbol
-#
-#                _dict[token.name] = Assignment(Symbol(token.name), 0.0)
+                if DEBUG:
+                    print ("> No translation for Real node. TODO")
         return _dict
 # ...
 

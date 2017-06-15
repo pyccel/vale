@@ -13,7 +13,8 @@ def test_linear_form_11():
     stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
     stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
     stmts += "Function(x)                     :: f"     + "\n"
-    stmts += "b(v::V) := < f * v >_Omega"               + "\n"
+    stmts += "Real                            :: s"     + "\n"
+    stmts += "b(v::V) := < s * f * v >_Omega"           + "\n"
 
     ast = vale.parse(stmts)
 
@@ -157,9 +158,9 @@ def test_bilinear_form_21():
 ######################################
 if __name__ == "__main__":
 #    # ... code generation for linear forms
-#    test_linear_form_11()
+    test_linear_form_11()
 #    test_linear_form_12()
-    test_linear_form_13()
+#    test_linear_form_13()
 
 #    test_linear_form_21()
 #    test_linear_form_31()

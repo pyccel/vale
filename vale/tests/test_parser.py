@@ -139,6 +139,32 @@ def test_linear_form_11():
 # ...
 
 # ...
+def test_linear_form_12():
+    # ... parse the Vale code
+    stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
+    stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
+    stmts += "Real                            :: s" + "\n"
+    stmts += "b(v::V) := < s * v >_Omega"           + "\n"
+
+    ast = vale.parse(stmts)
+
+    token = get_by_name(ast, "b")
+    # ...
+
+    # ...
+    assert(token.name           == "b")
+    assert(token.domain         == "Omega")
+    assert(token.args.space     == "V")
+    assert(token.args.functions == ["v"])
+    # ...
+
+    # ... sends the expression to sympy to check its validity
+    expr = token.to_sympy()
+    print expr
+    # ...
+# ...
+
+# ...
 def test_linear_form_21():
     # ... parse the Vale code
     stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
@@ -277,15 +303,16 @@ if __name__ == "__main__":
 #    # ... function testing
 #    test_function_1()
 #    # ...
-
-    # ... number testing
-    test_number_1()
-    # ...
-
+#
+#    # ... number testing
+#    test_number_1()
+#    # ...
+#
 #    # ... linear form testing
 #    test_linear_form_1()
 #    test_linear_form_2()
 #    test_linear_form_11()
+    test_linear_form_12()
 #    test_linear_form_21()
 #    # ...
 #
