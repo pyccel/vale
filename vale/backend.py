@@ -5,6 +5,8 @@ from vale.codegen import ValeCodegen
 from vale.parser  import (ValeParser, ast_to_dict)
 from vale.syntax  import (LinearForm, BilinearForm, \
                           Domain, Space, Field, Function, Real)
+from vale.utilities import replace_symbol_derivatives, replace_function_with_args
+
 
 DEBUG = False
 #DEBUG = True
@@ -30,6 +32,37 @@ except:
 # ...
 
 # ...
+def construct_glt_expression(form):
+    """Constructs the glt expression to be used for glt_symbol from a bilinear
+    form.
+
+    form: BilinearForm
+        a bilinear form from the AST.
+    """
+    _expr = form.to_sympy()
+    for f in form.args_test.functions:
+        _expr = replace_symbol_derivatives(_expr, f, "Ni")
+
+    for f in form.args_trial.functions:
+        _expr = replace_symbol_derivatives(_expr, f, "Nj")
+
+    dim   = form.attributs["dim"]
+
+    # update calls to functions
+    user_functions = form.attributs["user_functions"]
+    for f_name in user_functions:
+        args = ["x", "y", "z"][:dim]
+        _expr = replace_function_with_args(_expr, f_name, args)
+
+    # list of fields
+    user_fields = form.attributs["user_fields"]
+    for f_name in user_fields:
+        _expr = _expr.subs(Symbol(f_name), Symbol(f_name+"_0"))
+
+    return _expr
+# ...
+
+# ...
 class ClappFormulation(object):
     """
     A generic class for Bilinear and Linear forms, which can be considered as a
@@ -39,7 +72,9 @@ class ClappFormulation(object):
                  matrix=None, \
                  vector=None, \
                  assembler=None, \
-                 functions=None):
+                 functions=None, \
+                 expr=None, \
+                 glt_expr=None):
         """
         Creates a Bilinear or Linear Formulation
 
@@ -55,12 +90,20 @@ class ClappFormulation(object):
         functions: dict
             a dictionary containing the functions used in the formulation
 
+        expr: sympy.Expression
+            expression of the linear/bilinear form
+
+        glt_expr: sympy.Expression
+            pretty expression of the bilinear form for glt computation
+
         """
 
-        self._matrix     = matrix
-        self._vector     = vector
-        self._assembler  = assembler
-        self._functions  = functions
+        self._matrix    = matrix
+        self._vector    = vector
+        self._assembler = assembler
+        self._functions = functions
+        self._expr      = expr
+        self._glt_expr  = glt_expr
 
     @property
     def matrix(self):
@@ -89,6 +132,21 @@ class ClappFormulation(object):
         Returns the functions dictionary
         """
         return self._functions
+
+    @property
+    def expr(self):
+        """
+        Returns the expression of the linear/bilinear form
+        """
+        return self._expr
+
+    @property
+    def glt_expr(self):
+        """
+        Returns the glt expression of the bilinear form, same as expr but we
+        apply some pretty printing.
+        """
+        return self._glt_expr
 # ...
 
 # ...
@@ -232,7 +290,9 @@ class ClappAST(object):
                 # ...
 
                 # ...
-                d = ClappFormulation(vector=vector, assembler=assembler)
+                d = ClappFormulation(vector=vector, \
+                                     assembler=assembler, \
+                                     expr=token.to_sympy())
                 _dict[token.name] = d
                 # ...
             elif isinstance(token, BilinearForm):
@@ -317,7 +377,9 @@ class ClappAST(object):
                 # ...
                 d = ClappFormulation(matrix=matrix, \
                                      assembler=assembler, \
-                                     functions=functions)
+                                     functions=functions, \
+                                     expr=token.to_sympy(), \
+                                     glt_expr=construct_glt_expression(token))
                 _dict[token.name] = d
                 # ...
             elif isinstance(token, Real):
