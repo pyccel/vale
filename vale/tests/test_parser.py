@@ -143,8 +143,8 @@ def test_linear_form_12():
     # ... parse the Vale code
     stmts  = "Domain(dim=1,kind='structured') :: Omega" + "\n"
     stmts += "Space(domain=Omega,kind='h1')   :: V"     + "\n"
-    stmts += "Real                            :: s" + "\n"
-    stmts += "b(v::V) := < s * v >_Omega"           + "\n"
+    stmts += "Real                            :: alpha" + "\n"
+    stmts += "b(v::V) := < alpha * v >_Omega"           + "\n"
 
     ast = vale.parse(stmts)
 

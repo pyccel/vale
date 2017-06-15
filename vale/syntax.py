@@ -5,6 +5,8 @@ from sympy import Symbol, sympify
 from vale.utilities import (grad, d_var, inner, outer, cross, dot, \
                            replace_symbol_derivatives)
 
+#DEBUG = True
+DEBUG = False
 
 __all__ = ["Vale", \
            "Expression", "Term", "Operand", \
@@ -486,7 +488,8 @@ class FactorSigned(ExpressionElement):
 
     @property
     def expr(self):
-#        print "> FactorSigned "
+        if DEBUG:
+            print "> FactorSigned "
         expr = self.op.expr
         return -expr if self.sign == '-' else expr
 
@@ -500,7 +503,8 @@ class FactorUnary(ExpressionElement):
 
     @property
     def expr(self):
-#        print "> FactorUnary "
+        if DEBUG:
+            print "> FactorUnary "
         expr = self.op.expr
         # TODO gets dim from Domain
         dim = 2
@@ -550,7 +554,8 @@ class FactorBinary(ExpressionElement):
 
     @property
     def expr(self):
-#        print "> FactorBinary "
+        if DEBUG:
+            print "> FactorBinary "
 #        print self.op
 
         expr_l = self.op[0].expr
@@ -572,7 +577,8 @@ class FactorBinary(ExpressionElement):
 class Term(ExpressionElement):
     @property
     def expr(self):
-#        print "> Term "
+        if DEBUG:
+            print "> Term "
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation == '*':
@@ -585,7 +591,8 @@ class Term(ExpressionElement):
 class Expression(ExpressionElement):
     @property
     def expr(self):
-#        print "> Expression "
+        if DEBUG:
+            print "> Expression "
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation == '+':
@@ -598,8 +605,11 @@ class Expression(ExpressionElement):
 class Operand(ExpressionElement):
     @property
     def expr(self):
-#        print "> Operand "
-        op = self.op[0]
+        if DEBUG:
+            print "> Operand "
+            print self.op
+#        op = self.op[0]
+        op = self.op
         if type(op) in {int, float}:
             return op
         elif isinstance(op, ExpressionElement):
@@ -620,7 +630,8 @@ class Operand(ExpressionElement):
 class ExpressionBodyForm(ExpressionElement):
     @property
     def expr(self):
-#        print "> ExpressionBodyForm "
+        if DEBUG:
+            print "> ExpressionBodyForm "
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation in ['+', '-']:
@@ -634,7 +645,8 @@ class ExpressionBodyForm(ExpressionElement):
 class TermForm(ExpressionElement):
     @property
     def expr(self):
-#        print "> TermForm "
+        if DEBUG:
+            print "> TermForm "
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation == '*':
@@ -656,7 +668,8 @@ class CallForm(ExpressionBodyForm):
 
     @property
     def expr(self):
-#        print "> CallForm"
+        if DEBUG:
+            print "> CallForm"
         if self.name in namespace:
             b  = namespace[stack["parent"]]
 
