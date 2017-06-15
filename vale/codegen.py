@@ -15,6 +15,9 @@ from vale.utilities import replace_symbol_derivatives, replace_function_with_arg
 __all__ = ["ValeCodegen"]
 
 # TODO add _ at the begining of all generated variables in LUA
+# TODO for n_deriv = 2, only 1d and 2d mappings were implemented. must add
+#      arr_hessian to fortlua and django core
+
 
 
 class Codegen(object):
@@ -95,27 +98,43 @@ class Pullback(Codegen):
 
         # ...
         arr_jacobian = IndexedBase('arr_jacobian')
+        arr_hessian  = IndexedBase('arr_hessian')
         # ...
 
         # ... pullback definition
-        #     TODO rename jux to u_x ?
-        jux = Symbol('jux')
-        jvx = Symbol('jvx')
-        jwx = Symbol('jwx')
+        #     TODO to improve using a class or a function
+        j11 = Symbol('j11')
+        j12 = Symbol('j12')
+        j13 = Symbol('j13')
 
-        juy = Symbol('juy')
-        jvy = Symbol('jvy')
-        jwy = Symbol('jwy')
+        j21 = Symbol('j21')
+        j22 = Symbol('j22')
+        j23 = Symbol('j23')
 
-        juz = Symbol('juz')
-        jvz = Symbol('jvz')
-        jwz = Symbol('jwz')
+        j31 = Symbol('j31')
+        j32 = Symbol('j32')
+        j33 = Symbol('j33')
         # ...
 
         # ... second order derivatives of the mapping
-        juxx = Symbol('juxx')
-        jvxx = Symbol('jvxx')
-        jwxx = Symbol('jwxx')
+        #     TODO to improve using a class or a function
+        h11 = Symbol('h11')
+        h12 = Symbol('h12')
+        h13 = Symbol('h13')
+        h14 = Symbol('h14')
+        h15 = Symbol('h15')
+
+        h21 = Symbol('h21')
+        h22 = Symbol('h22')
+        h23 = Symbol('h23')
+        h24 = Symbol('h24')
+        h25 = Symbol('h25')
+
+        h31 = Symbol('h31')
+        h32 = Symbol('h32')
+        h33 = Symbol('h33')
+        h34 = Symbol('h34')
+        h35 = Symbol('h35')
         # ...
 
         # ...
@@ -165,6 +184,10 @@ class Pullback(Codegen):
 
         # ...
         args  = [arr_jacobian]
+
+        # TODO uncomment this line one hessian available
+#        if n_deriv > 1:
+#            args += [arr_hessian]
         # ...
 
         body  = []
@@ -176,58 +199,137 @@ class Pullback(Codegen):
             # ...
 
             # ...
-            if n_deriv > 1:
-                body.append(Assign(ggg, sympify('2*(g1 - 1) + 1')))
-                body.append(Assign(jux, arr_jacobian[ggg]))
-
-                body.append(Assign(ggg, sympify('2*(g1 - 1) + 2')))
-                body.append(Assign(juxx, arr_jacobian[ggg]))
-            else:
-                body.append(Assign(jux, arr_jacobian[g1]))
+            body.append(Assign(ggg, sympify('g1')))
+            body.append(Assign(j11, arr_jacobian[ggg]))
             # ...
 
             # ...
-            body += [Assign(Ni_x, jux * Ni_u)]
+            # TODO uncomment this line one hessian available
+#            if n_deriv > 1:
+#                body.append(Assign(ggg, sympify('2*(g1 - 1) + 1')))
+#                body.append(Assign(h11, arr_jacobian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('2*(g1 - 1) + 2')))
+#                body.append(Assign(h12, arr_jacobian[ggg]))
+            # ...
+
+            # ...
+            body += [Assign(Ni_x, j11 * Ni_u)]
             if n_deriv > 1:
-                body += [Assign(Ni_xx, juxx * Ni_u + jux * jux * Ni_uu)]
+                # TODO uncomment this line one hessian available
+#                body += [Assign(Ni_xx, h11 * Ni_u + h12 * Ni_uu)]
+
+                body += [Assign(Ni_xx, Ni_uu)]
 
             if trial:
-                body += [Assign(Nj_x, jux * Nj_u)]
+                body += [Assign(Nj_x, j11 * Nj_u)]
 
                 if n_deriv > 1:
-                    body += [Assign(Nj_xx, juxx * Nj_u + jux * jux * Nj_uu)]
+                    # TODO uncomment this line one hessian available
+#                    body += [Assign(Nj_xx, h11 * Nj_u + h12 * Nj_uu)]
+
+                    body += [Assign(Nj_xx, Nj_uu)]
             # ...
         elif dim == 2:
             # ...
             ggg = Idx('ggg', 4 * n1 * n2)
 
             body.append(Assign(ggg, sympify('4*(gg - 1) + 1')))
-            body.append(Assign(jux, arr_jacobian[ggg]))
+            body.append(Assign(j11, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('4*(gg - 1) + 2')))
-            body.append(Assign(jvx, arr_jacobian[ggg]))
+            body.append(Assign(j12, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('4*(gg - 1) + 3')))
-            body.append(Assign(juy, arr_jacobian[ggg]))
+            body.append(Assign(j21, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('4*(gg - 1) + 4')))
-            body.append(Assign(jvy, arr_jacobian[ggg]))
+            body.append(Assign(j22, arr_jacobian[ggg]))
             # ...
 
             # ...
-            body += [Assign(Ni_x, jux * Ni_u + jvx * Ni_v), \
-                     Assign(Ni_y, juy * Ni_u + jvy * Ni_v)]
+            # TODO uncomment this line or rewrite it proprely one hessian available
+#            if n_deriv > 1:
+#                hhh = Idx('hhh', 15 * n1 * n2)
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 1')))
+#                body.append(Assign(h11, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 2')))
+#                body.append(Assign(h12, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 3')))
+#                body.append(Assign(h13, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 4')))
+#                body.append(Assign(h14, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 5')))
+#                body.append(Assign(h15, arr_hessian[ggg]))
+#
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 6')))
+#                body.append(Assign(h21, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 7')))
+#                body.append(Assign(h22, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 8')))
+#                body.append(Assign(h23, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 9')))
+#                body.append(Assign(h24, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 10')))
+#                body.append(Assign(h25, arr_hessian[ggg]))
+#
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 11')))
+#                body.append(Assign(h31, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 12')))
+#                body.append(Assign(h32, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 13')))
+#                body.append(Assign(h33, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 14')))
+#                body.append(Assign(h34, arr_hessian[ggg]))
+#
+#                body.append(Assign(ggg, sympify('15*(gg - 1) + 15')))
+#                body.append(Assign(h35, arr_hessian[ggg]))
+            # ...
+
+            # ...
+            body += [Assign(Ni_x, j11 * Ni_u + j12 * Ni_v), \
+                     Assign(Ni_y, j21 * Ni_u + j22 * Ni_v)]
 
             if n_deriv > 1:
+                # TODO uncomment this line or rewrite it proprely one hessian available
+#                body += [Assign(Ni_xx, \
+#                                h11 * Ni_u + h12 * Ni_v + h13 * Ni_uu + h14 * Ni_uv + h15 * Ni_vv)]
+#                body += [Assign(Ni_xy, \
+#                                h21 * Ni_u + h22 * Ni_v + h23 * Ni_uu + h24 * Ni_uv + h25 * Ni_vv)]
+#                body += [Assign(Ni_yy, \
+#                                h31 * Ni_u + h32 * Ni_v + h33 * Ni_uu + h34 * Ni_uv + h35 * Ni_vv)]
+
                 body += [Assign(Ni_xx, Ni_uu), \
                          Assign(Ni_xy, Ni_uv), \
                          Assign(Ni_yy, Ni_vv)]
 
             if trial:
-                body += [Assign(Nj_x, jux * Nj_u + jvx * Nj_v), \
-                         Assign(Nj_y, juy * Nj_u + jvy * Nj_v)]
+                body += [Assign(Nj_x, j11 * Nj_u + j12 * Nj_v), \
+                         Assign(Nj_y, j21 * Nj_u + j22 * Nj_v)]
 
                 if n_deriv > 1:
+                    # TODO uncomment this line or rewrite it proprely one hessian available
+#                    body += [Assign(Nj_xx, \
+#                                    h11 * Nj_u + h12 * Nj_v + h13 * Nj_uu + h14 * Nj_uv + h15 * Nj_vv)]
+#                    body += [Assign(Nj_xy, \
+#                                    h21 * Nj_u + h22 * Nj_v + h23 * Nj_uu + h24 * Nj_uv + h25 * Nj_vv)]
+#                    body += [Assign(Nj_yy, \
+#                                    h31 * Nj_u + h32 * Nj_v + h33 * Nj_uu + h34 * Nj_uv + h35 * Nj_vv)]
+
                     body += [Assign(Nj_xx, Nj_uu), \
                              Assign(Nj_xy, Nj_uv), \
                              Assign(Nj_yy, Nj_vv)]
@@ -237,39 +339,39 @@ class Pullback(Codegen):
             ggg = Idx('ggg', 9 * n1 * n2 * n3)
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 1')))
-            body.append(Assign(jux, arr_jacobian[ggg]))
+            body.append(Assign(j11, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 2')))
-            body.append(Assign(jvx, arr_jacobian[ggg]))
+            body.append(Assign(j12, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 3')))
-            body.append(Assign(jwx, arr_jacobian[ggg]))
+            body.append(Assign(j13, arr_jacobian[ggg]))
 
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 4')))
-            body.append(Assign(juy, arr_jacobian[ggg]))
+            body.append(Assign(j21, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 5')))
-            body.append(Assign(jvy, arr_jacobian[ggg]))
+            body.append(Assign(j22, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 6')))
-            body.append(Assign(jwy, arr_jacobian[ggg]))
+            body.append(Assign(j23, arr_jacobian[ggg]))
 
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 7')))
-            body.append(Assign(juz, arr_jacobian[ggg]))
+            body.append(Assign(j31, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 8')))
-            body.append(Assign(jvz, arr_jacobian[ggg]))
+            body.append(Assign(j32, arr_jacobian[ggg]))
 
             body.append(Assign(ggg, sympify('9*(gg - 1) + 9')))
-            body.append(Assign(jwz, arr_jacobian[ggg]))
+            body.append(Assign(j33, arr_jacobian[ggg]))
             # ...
 
             # ...
-            body += [Assign(Ni_x, jux * Ni_u + jvx * Ni_v + jwx * Ni_w), \
-                     Assign(Ni_y, juy * Ni_u + jvy * Ni_v + jwy * Ni_w), \
-                     Assign(Ni_z, juz * Ni_u + jvz * Ni_v + jwz * Ni_w)]
+            body += [Assign(Ni_x, j11 * Ni_u + j12 * Ni_v + j13 * Ni_w), \
+                     Assign(Ni_y, j21 * Ni_u + j22 * Ni_v + j23 * Ni_w), \
+                     Assign(Ni_z, j31 * Ni_u + j32 * Ni_v + j33 * Ni_w)]
 
             if n_deriv > 1:
                 body += [Assign(Ni_xx, Ni_uu), \
@@ -280,9 +382,9 @@ class Pullback(Codegen):
                          Assign(Ni_xz, Ni_uw)]
 
             if trial:
-                body += [Assign(Nj_x, jux * Nj_u + jvx * Nj_v + jwx * Nj_w), \
-                         Assign(Nj_y, juy * Nj_u + jvy * Nj_v + jwy * Nj_w), \
-                         Assign(Nj_z, juz * Nj_u + jvz * Nj_v + jwz * Nj_w)]
+                body += [Assign(Nj_x, j11 * Nj_u + j12 * Nj_v + j13 * Nj_w), \
+                         Assign(Nj_y, j21 * Nj_u + j22 * Nj_v + j23 * Nj_w), \
+                         Assign(Nj_z, j31 * Nj_u + j32 * Nj_v + j33 * Nj_w)]
 
                 if n_deriv > 1:
                     body += [Assign(Nj_xx, Nj_uu), \
@@ -300,19 +402,23 @@ class Pullback(Codegen):
         local_vars += [Ni_u, Ni_v, Ni_w][:dim]
         local_vars += [Ni_x, Ni_y, Ni_z][:dim]
 
-        local_vars += [jux, jvx, jwx][:dim]
-        local_vars += [juy, jvy, jwy][:dim]
-        local_vars += [juz, jvz, jwz][:dim]
+        local_vars += [j11, j12, j13][:dim]
+        local_vars += [j21, j22, j23][:dim]
+        local_vars += [j31, j32, j33][:dim]
 
         if n_deriv > 1:
             if dim == 1:
                 local_vars += [Ni_uu]
                 local_vars += [Ni_xx]
 
-                local_vars += [juxx]
+                local_vars += [h11, h12]
             elif dim == 2:
                 local_vars += [Ni_uu, Ni_uv, Ni_vv]
                 local_vars += [Ni_xx, Ni_xy, Ni_yy]
+
+                local_vars += [h11, h12, h13, h14, h15]
+                local_vars += [h21, h22, h23, h24, h25]
+                local_vars += [h31, h32, h33, h34, h35]
             elif dim == 3:
                 local_vars += [Ni_uu, Ni_vv, Ni_ww, Ni_uv, Ni_vw, Ni_uw]
                 local_vars += [Ni_xx, Ni_yy, Ni_zz, Ni_xy, Ni_yz, Ni_xz]
