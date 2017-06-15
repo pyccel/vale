@@ -8,11 +8,12 @@ from sympy import S
 from sympy.core.sympify import sympify
 import numpy as np
 
+
 # ...
 def run(filename):
     # ...
-    from caid.cad_geometry import line
-    geometry = line()
+    from caid.cad_geometry import cube
+    geometry = cube()
 
     from clapp.spl.mapping import Mapping
     mapping = Mapping(geometry=geometry)
@@ -21,9 +22,9 @@ def run(filename):
     # ... creates discretization parameters
     from clapp.disco.parameters.bspline import BSpline
 
-    bspline_params = BSpline([8], [2], \
-                             bc_min=[0], \
-                             bc_max=[0])
+    bspline_params = BSpline([8,8,8], [2,2,2], \
+                             bc_min=[0,0,0], \
+                             bc_max=[0,0,0])
     # ...
 
     # ... create a context from discretization
@@ -58,7 +59,7 @@ def run(filename):
     # ...
 
     # ... set expression for the function f
-    f.set("2 + r * x*(1 - x)", \
+    f.set("2*x*(1-x)*y*(1-y) + 2*y*(1-y)*z*(1-z) + 2*z*(1-z)*x*(1-x) + 0.5*x*(1-x)*y*(1-y)*z*(1-z) ", \
           constants=constants)
     # ...
 
@@ -88,17 +89,15 @@ def run(filename):
     phi.set(y)
     # ...
 
-    # ... plot field using matplotlib
-    import matplotlib.pyplot as plt
-
-    phi.plot(n_pts=100)
-    plt.show()
+    # ... exports phi to vtk file. Can be used in Visit and Paraview
+    filename_out = "uh_3d_"+filename.split('/')[-1].split('.')[0] + ".vtk"
+    phi.to_vtk(filename_out, mapping=mapping, n_pts=20)
     # ...
 
     # ... define the analytical solution for phi
     from clapp.vale.expressions.function import Function
 
-    phi_analytic = Function("phi_analytic", "x*(1 - x)", args=["x"])
+    phi_analytic = Function("phi_analytic", "x*(1-x)*y*(1-y)*z*(1-z)", args=["x", "y", "z"])
     # ...
 
     # ... compute L2 error
@@ -109,10 +108,6 @@ def run(filename):
     # ...
     cmd = "rm -rf input"
     os.system(cmd)
-    # ...
-
-    # ...
-    plt.clf()
     # ...
 
     print ("> run using ", filename, " passed.")
@@ -130,7 +125,7 @@ import os
 cmd = "rm -rf input"
 os.system(cmd)
 
-run(filename="inputs/1d/laplace.vl")
+run(filename="inputs/3d/laplace.vl")
 
 cmd = "rm -rf input"
 os.system(cmd)

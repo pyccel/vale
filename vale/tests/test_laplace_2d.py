@@ -8,11 +8,12 @@ from sympy import S
 from sympy.core.sympify import sympify
 import numpy as np
 
+
 # ...
 def run(filename):
     # ...
-    from caid.cad_geometry import line
-    geometry = line()
+    from caid.cad_geometry import square
+    geometry = square()
 
     from clapp.spl.mapping import Mapping
     mapping = Mapping(geometry=geometry)
@@ -21,9 +22,9 @@ def run(filename):
     # ... creates discretization parameters
     from clapp.disco.parameters.bspline import BSpline
 
-    bspline_params = BSpline([8], [2], \
-                             bc_min=[0], \
-                             bc_max=[0])
+    bspline_params = BSpline([8,8], [2,2], \
+                             bc_min=[0,0], \
+                             bc_max=[0,0])
     # ...
 
     # ... create a context from discretization
@@ -58,7 +59,7 @@ def run(filename):
     # ...
 
     # ... set expression for the function f
-    f.set("2 + r * x*(1 - x)", \
+    f.set("2*x*(1-x) + 2*y*(1-y) + 0.5 * x*(1-x)*y*(1-y) ", \
           constants=constants)
     # ...
 
@@ -92,13 +93,14 @@ def run(filename):
     import matplotlib.pyplot as plt
 
     phi.plot(n_pts=100)
+    plt.colorbar()
     plt.show()
     # ...
 
     # ... define the analytical solution for phi
     from clapp.vale.expressions.function import Function
 
-    phi_analytic = Function("phi_analytic", "x*(1 - x)", args=["x"])
+    phi_analytic = Function("phi_analytic", "x*(1-x)*y*(1-y)", args=["x", "y"])
     # ...
 
     # ... compute L2 error
@@ -130,7 +132,7 @@ import os
 cmd = "rm -rf input"
 os.system(cmd)
 
-run(filename="inputs/1d/laplace.vl")
+run(filename="inputs/2d/laplace.vl")
 
 cmd = "rm -rf input"
 os.system(cmd)
