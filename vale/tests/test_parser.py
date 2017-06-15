@@ -65,6 +65,19 @@ def test_function_1():
 # ...
 
 # ...
+def test_number_1():
+    # ... parse the Vale code
+    ast = vale.parse("Real :: alpha")
+
+    token = get_by_name(ast, "alpha")
+    # ...
+
+    # ...
+    assert(token.name       == "alpha")
+    # ...
+# ...
+
+# ...
 def test_linear_form_1():
     # ... parse the Vale code
     ast = vale.parse("b(v::V) := < f * v >_Omega")
@@ -249,32 +262,36 @@ def test_bilinear_form_21():
 
 ######################################
 if __name__ == "__main__":
-    # ... domain testing
-    test_domain_1()
+#    # ... domain testing
+#    test_domain_1()
+#    # ...
+#
+#    # ... space testing
+#    test_space_1()
+#    # ...
+#
+#    # ... field testing
+#    test_field_1()
+#    # ...
+#
+#    # ... function testing
+#    test_function_1()
+#    # ...
+
+    # ... number testing
+    test_number_1()
     # ...
 
-    # ... space testing
-    test_space_1()
-    # ...
-
-    # ... field testing
-    test_field_1()
-    # ...
-
-    # ... function testing
-    test_function_1()
-    # ...
-
-    # ... linear form testing
-    test_linear_form_1()
-    test_linear_form_2()
-    test_linear_form_11()
-    test_linear_form_21()
-    # ...
-
-    # ... linear form testing
-    test_bilinear_form_1()
-    test_bilinear_form_2()
-    test_bilinear_form_11()
-    test_bilinear_form_21()
-    # ...
+#    # ... linear form testing
+#    test_linear_form_1()
+#    test_linear_form_2()
+#    test_linear_form_11()
+#    test_linear_form_21()
+#    # ...
+#
+#    # ... linear form testing
+#    test_bilinear_form_1()
+#    test_bilinear_form_2()
+#    test_bilinear_form_11()
+#    test_bilinear_form_21()
+#    # ...
