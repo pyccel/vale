@@ -5,8 +5,8 @@ from sympy import Symbol, sympify
 from vale.utilities import (grad, d_var, inner, outer, cross, dot, \
                            replace_symbol_derivatives)
 
-#DEBUG = True
 DEBUG = False
+#DEBUG = True
 
 __all__ = ["Vale", \
            "Expression", "Term", "Operand", \
