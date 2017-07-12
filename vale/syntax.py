@@ -607,24 +607,58 @@ class Operand(ExpressionElement):
     def expr(self):
         if DEBUG:
             print "> Operand "
+            print "> stack : ", stack
             print self.op
 #        op = self.op[0]
         op = self.op
         if type(op) in {int, float}:
             return op
+        elif type(op) == list:
+            # op is a list
+            for O in op:
+                if O in namespace:
+                    # TODO use isinstance
+                    if type(namespace[O]) in [Field, Function, Real]:
+                        return namespace[O].expr
+                    else:
+                        return namespace[O]
+                elif O in stack:
+                    if DEBUG:
+                        print ">>> found local variables: " + O
+                    return Symbol(O)
+                else:
+                    raise Exception('Unknown variable "{}" at position {}'
+                                    .format(O, self._tx_position))
         elif isinstance(op, ExpressionElement):
             return op.expr
+        elif op in stack:
+            if DEBUG:
+                print ">>> found local variables: " + op
+            return Symbol(op)
         elif op in namespace:
+            # TODO use isinstance
             if type(namespace[op]) in [Field, Function, Real]:
                 return namespace[op].expr
             else:
                 return namespace[op]
-        elif op in stack:
-#            print ">>> found local variables: " + op
-            return Symbol(op)
         else:
             raise Exception('Unknown variable "{}" at position {}'
                             .format(op, self._tx_position))
+
+#                try:
+#                    if O in namespace:
+#                        # TODO use isinstance
+#                        if type(namespace[O]) in [Field, Function, Real]:
+#                            return namespace[O].expr
+#                        else:
+#                            return namespace[O]
+#                    elif O in stack:
+#                        if DEBUG:
+#                            print ">>> found local variables: " + op
+#                        return Symbol(O)
+#                except:
+#                    raise Exception('Unknown variable "{}" at position {}'
+#                                    .format(O, self._tx_position))
 
 
 class ExpressionBodyForm(ExpressionElement):
