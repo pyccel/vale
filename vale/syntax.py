@@ -607,8 +607,8 @@ class Operand(ExpressionElement):
     def expr(self):
         if DEBUG:
             print("> Operand ")
-            print("> stack : ", stack)
-            print(self.op)
+            print(("> stack : ", stack))
+            print((self.op))
 #        op = self.op[0]
         op = self.op
         if type(op) in {int, float}:
@@ -624,7 +624,7 @@ class Operand(ExpressionElement):
                         return namespace[O]
                 elif O in stack:
                     if DEBUG:
-                        print(">>> found local variables: " + O)
+                        print((">>> found local variables: " + O))
                     return Symbol(O)
                 else:
                     raise Exception('Unknown variable "{}" at position {}'
@@ -633,7 +633,7 @@ class Operand(ExpressionElement):
             return op.expr
         elif op in stack:
             if DEBUG:
-                print(">>> found local variables: " + op)
+                print((">>> found local variables: " + op))
             return Symbol(op)
         elif op in namespace:
             # TODO use isinstance
