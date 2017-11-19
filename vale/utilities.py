@@ -143,7 +143,7 @@ def replace_symbol_derivatives(expr, f, B):
         name of the new symbol
     """
     if type(expr) == dict:
-        for key, form in expr.items():
+        for key, form in list(expr.items()):
             expr[key] = replace_symbol_derivatives(form, f, B)
     else:
         expr = expr.subs({Symbol(f): Symbol(B + "_0")})
@@ -173,7 +173,7 @@ def replace_function_with_args(expr, f_name, args):
         arguments to give to the function. example: ["x", "y"]
     """
     if type(expr) == dict:
-        for key, form in expr.items():
+        for key, form in list(expr.items()):
             expr[key] = replace_function_with_args(form, f_name, args)
     else:
         dim = len(args)

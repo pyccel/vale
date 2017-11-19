@@ -829,7 +829,7 @@ class Formulation(Codegen):
         local_vars = []
         args       = []
         if type(expr) == dict:
-            for key, form in expr.items():
+            for key, form in list(expr.items()):
                 txt = "contribution_"
                 if type(key) == int:
                     label = str(key)
@@ -1014,7 +1014,7 @@ class ValeCodegen(Codegen):
 
         # ...
         if type(_expr) == dict:
-            for key, form in _expr.items():
+            for key, form in list(_expr.items()):
                 txt = "contribution_"
                 if type(key) == int:
                     label = str(key)
@@ -1069,10 +1069,10 @@ class ValeCodegen(Codegen):
             if type(self.expr) == dict:
                 # we order the dictionary with respect to the keys
                 from collections import OrderedDict, Counter
-                expr = OrderedDict(sorted(self.expr.items(), \
+                expr = OrderedDict(sorted(list(self.expr.items()), \
                                           key= lambda t:str(t[0]).lower()))
 
-                for key, form in expr.items():
+                for key, form in list(expr.items()):
                     txt = "contribution_"
                     if type(key) == int:
                         label = str(key)
@@ -1093,7 +1093,7 @@ class ValeCodegen(Codegen):
                 if type(self.n_blocks) == int:
                     n_rows = self.n_blocks
                     for i in range(0, n_rows):
-                        if not expr.has_key(i):
+                        if i not in expr:
                             label = str(i)
                             return_vars.append(Result(sympify("0.0"), \
                                                       name=Symbol("output_"+label)))
@@ -1103,7 +1103,7 @@ class ValeCodegen(Codegen):
                     n_cols = self.n_blocks[1]
                     for i in range(0, n_rows):
                         for j in range(0, n_cols):
-                            if not expr.has_key((i,j)):
+                            if (i,j) not in expr:
                                 label = str(i) + str(j)
                                 return_vars.append(Result(sympify("0.0"), \
                                                           name=Symbol("output_"+label)))

@@ -231,7 +231,7 @@ class LinearForm(Form):
             # ... 
 
             # ... TODO check domain
-            for key, form in self.blocks.items():
+            for key, form in list(self.blocks.items()):
                 self.domain = form.domain
                 break
             # ... 
@@ -263,7 +263,7 @@ class LinearForm(Form):
             self.n_deriv        = 0
             self.n_deriv_fields = 0
 
-            for key, form in self.blocks.items():
+            for key, form in list(self.blocks.items()):
                 expr[key] = form.to_sympy()
                 if len(form.args.functions) == 1:
                     old = form.args.functions[0]
@@ -358,7 +358,7 @@ class BilinearForm(Form):
             # ... 
 
             # ... TODO check domain
-            for key, form in self.blocks.items():
+            for key, form in list(self.blocks.items()):
                 self.domain = form.domain
                 break
             # ... 
@@ -400,7 +400,7 @@ class BilinearForm(Form):
             self.n_deriv        = 0
             self.n_deriv_fields = 0
 
-            for key, form in self.blocks.items():
+            for key, form in list(self.blocks.items()):
                 expr[key] = form.to_sympy()
                 if (len(form.args_test.functions) == 1) and \
                    (len(form.args_trial.functions) == 1):
@@ -489,7 +489,7 @@ class FactorSigned(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> FactorSigned "
+            print("> FactorSigned ")
         expr = self.op.expr
         return -expr if self.sign == '-' else expr
 
@@ -504,7 +504,7 @@ class FactorUnary(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> FactorUnary "
+            print("> FactorUnary ")
         expr = self.op.expr
         # TODO gets dim from Domain
         dim = 2
@@ -555,7 +555,7 @@ class FactorBinary(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> FactorBinary "
+            print("> FactorBinary ")
 #        print self.op
 
         expr_l = self.op[0].expr
@@ -578,7 +578,7 @@ class Term(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> Term "
+            print("> Term ")
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation == '*':
@@ -592,7 +592,7 @@ class Expression(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> Expression "
+            print("> Expression ")
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation == '+':
@@ -606,9 +606,9 @@ class Operand(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> Operand "
-            print "> stack : ", stack
-            print self.op
+            print("> Operand ")
+            print("> stack : ", stack)
+            print(self.op)
 #        op = self.op[0]
         op = self.op
         if type(op) in {int, float}:
@@ -624,7 +624,7 @@ class Operand(ExpressionElement):
                         return namespace[O]
                 elif O in stack:
                     if DEBUG:
-                        print ">>> found local variables: " + O
+                        print(">>> found local variables: " + O)
                     return Symbol(O)
                 else:
                     raise Exception('Unknown variable "{}" at position {}'
@@ -633,7 +633,7 @@ class Operand(ExpressionElement):
             return op.expr
         elif op in stack:
             if DEBUG:
-                print ">>> found local variables: " + op
+                print(">>> found local variables: " + op)
             return Symbol(op)
         elif op in namespace:
             # TODO use isinstance
@@ -665,7 +665,7 @@ class ExpressionBodyForm(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> ExpressionBodyForm "
+            print("> ExpressionBodyForm ")
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation in ['+', '-']:
@@ -680,7 +680,7 @@ class TermForm(ExpressionElement):
     @property
     def expr(self):
         if DEBUG:
-            print "> TermForm "
+            print("> TermForm ")
         ret = self.op[0].expr
         for operation, operand in zip(self.op[1::2], self.op[2::2]):
             if operation == '*':
@@ -703,7 +703,7 @@ class CallForm(ExpressionBodyForm):
     @property
     def expr(self):
         if DEBUG:
-            print "> CallForm"
+            print("> CallForm")
         if self.name in namespace:
             b  = namespace[stack["parent"]]
 

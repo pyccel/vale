@@ -134,7 +134,7 @@ def test_linear_form_11():
 
     # ... sends the expression to sympy to check its validity
     expr = token.to_sympy()
-    print expr
+    print(expr)
     # ...
 # ...
 
@@ -160,7 +160,7 @@ def test_linear_form_12():
 
     # ... sends the expression to sympy to check its validity
     expr = token.to_sympy()
-    print expr
+    print(expr)
     # ...
 # ...
 
@@ -188,7 +188,7 @@ def test_linear_form_21():
 
     # ... sends the expression to sympy to check its validity
     expr = token.to_sympy()
-    print expr
+    print(expr)
     # ...
 # ...
 
@@ -254,7 +254,7 @@ def test_bilinear_form_11():
 
     # ... sends the expression to sympy to check its validity
     expr = token.to_sympy()
-    print expr
+    print(expr)
     # ...
 # ...
 
@@ -282,7 +282,7 @@ def test_bilinear_form_21():
 
     # ... sends the expression to sympy to check its validity
     expr = token.to_sympy()
-    print expr
+    print(expr)
     # ...
 # ...
 

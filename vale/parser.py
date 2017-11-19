@@ -58,7 +58,7 @@ def annotate_form(token, ast):
 
         expr = token.to_sympy()
         if type(expr) == dict:
-            for key, form in expr.items():
+            for key, form in list(expr.items()):
                 free_symbols = form.free_symbols
                 for symbol in free_symbols:
                     var = get_by_name(ast, str(symbol))
@@ -95,7 +95,7 @@ def annotate_form(token, ast):
 
         expr = token.to_sympy()
         if type(expr) == dict:
-            for key, form in expr.items():
+            for key, form in list(expr.items()):
                 free_symbols = form.free_symbols
                 for symbol in free_symbols:
                     var = get_by_name(ast, str(symbol))

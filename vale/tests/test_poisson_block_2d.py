@@ -111,10 +111,10 @@ def run(filename):
 
     # ... compute L2 error
     x = phi.compute_l2_error(mapping=mapping, function=phi_analytic)[0,0]
-    print ("    L2-error norm (phi): " + str(x))
+    print(("    L2-error norm (phi): " + str(x)))
 
     x = psi.compute_l2_error(mapping=mapping, function=psi_analytic)[0,0]
-    print ("    L2-error norm (psi): " + str(x))
+    print(("    L2-error norm (psi): " + str(x)))
     # ...
 
     # ...
@@ -126,7 +126,7 @@ def run(filename):
     plt.clf()
     # ...
 
-    print ("> run using " + str(filename) + " passed.")
+    print(("> run using " + str(filename) + " passed."))
     # ...
 # ...
 
