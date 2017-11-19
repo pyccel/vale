@@ -42,6 +42,7 @@ except:
 def setup_package():
     setup(packages=packages, \
           include_package_data=True, \
+          zip_safe=True, \
           install_requires=install_requires, \
           **setup_args)
 
