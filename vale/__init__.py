@@ -1,9 +1,4 @@
-# -*- coding: UTF-8 -*-
-__version__ = "0.1"
+__version__ = 0.9
 
-from .backend    import *
-from .codegen    import *
-from .parser     import *
-from .syntax     import *
-from .utilities  import *
-
+from .parser  import *
+from .syntax  import *
